@@ -87,7 +87,7 @@ author:
   employer         :
   pubmed           : 
   googlescholar    : "https://scholar.google.fr/citations?user=UcnFUZ8AAAAJ&hl=en"
-  email            :
+  email            : "charles.corbiere[at]valeo.com"
   researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :
   bitbucket        :
@@ -109,7 +109,7 @@ author:
   stackoverflow    : # http://stackoverflow.com/users/123456/username
   steam            :
   tumblr           :
-  twitter          : "CharlesCorbiere"
+  twitter          : #"CharlesCorbiere"
   vine             :
   weibo            :
   xing             :
