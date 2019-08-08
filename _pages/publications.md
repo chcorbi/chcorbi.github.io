@@ -11,6 +11,6 @@ author_profile: true
 
 {% include base_path %}
 
-{% for post in site.publications reversed %}
-  {% include archive-single.html %}
-{% endfor %}
+[Leveraging Weakly Annotated Data for Fashion Image Retrieval and LabelPrediction](http://openaccess.thecvf.com/content_ICCV_2017_workshops/papers/w32/Corbiere_Leveraging_Weakly_Annotated_ICCV_2017_paper.pdf)  
+Charles Corbière, Hedi Ben-younes, Alexandre Ramé, Charles Ollion  
+*ICCV Worskshops 2017*
