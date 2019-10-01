@@ -13,8 +13,10 @@ I am a PhD Student at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](htt
 
 ## UPDATES
 
-* **NEW** Our paper "Addressing Failure Prediction by Learning Model Confidence" has been accepted at NeurIPS 2019
+* **NEW** Code for ConfidNet is available at https://github.com/valeoai/ConfidNet .
 
-* Started my PhD on *Robust and Multimodal Deep Learning for Autonomous Driving* in January 2019 at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](https://www.valeo.com/en/valeo-ai/), under the supervision of [Nicolas Thome](http://cedric.cnam.fr/~thomen) and [Patrick Pérez](https://ptrckprz.github.io/)
+* **NEW** Our paper "Addressing Failure Prediction by Learning Model Confidence" has been accepted at NeurIPS 2019;
+
+* Started my PhD on *Robust and Multimodal Deep Learning for Autonomous Driving* in January 2019 at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](https://www.valeo.com/en/valeo-ai/), under the supervision of [Nicolas Thome](http://cedric.cnam.fr/~thomen) and [Patrick Pérez](https://ptrckprz.github.io/).
 
 * I presented our paper [Leveraging Weakly Annotated Data for Fashion Image Retrieval and LabelPrediction](http://openaccess.thecvf.com/content_ICCV_2017_workshops/papers/w32/Corbiere_Leveraging_Weakly_Annotated_ICCV_2017_paper.pdf) written during my research internship at [Heuritech](https://www.heuritech.com/) at [Computer Vision for Fashion Worskhop](https://sites.google.com/zalando.de/cvf-iccv2017/) at ICCV 2017.
