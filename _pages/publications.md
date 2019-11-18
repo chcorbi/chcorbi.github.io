@@ -11,9 +11,9 @@ author_profile: true
 
 {% include base_path %}
 
-[Addressing Failure Prediction by Learning Model Confidence](https://arxiv.org/abs/1910.04851)  
+[Addressing Failure Prediction by Learning Model Confidence](https://papers.nips.cc/paper/8556-addressing-failure-detection-by-learning-model-confidence)  
 Charles Corbière, Nicolas Thome, Avner Bar-Hen, Matthieu Cord, Patrick Pérez  
-*NeurIPS 2019*
+*NeurIPS 2019* [[code]((https://github.com/valeoai/ConfidNet)]
 
 [Leveraging Weakly Annotated Data for Fashion Image Retrieval and Label Prediction](http://openaccess.thecvf.com/content_ICCV_2017_workshops/papers/w32/Corbiere_Leveraging_Weakly_Annotated_ICCV_2017_paper.pdf)  
 Charles Corbière, Hedi Ben-younes, Alexandre Ramé, Charles Ollion  
