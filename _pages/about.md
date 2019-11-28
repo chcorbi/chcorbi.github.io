@@ -13,7 +13,7 @@ I am a PhD Student at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](htt
 
 ## UPDATES
 
-* **NEW** Talk at the GdR ISIS (CNRS) seminar [Théorie du deep learning](http://www.gdr-isis.fr/index.php?page=reunion&idreunion=405) in October 17th about our paper Addressing Failure Prediction by Learning Model Confidence [[slides](https://chcorbi.github.io/files/prez_gdrisis_170919.pdf)]
+* **NEW** Talk at the GdR ISIS (CNRS) seminar [Théorie du deep learning](http://www.gdr-isis.fr/index.php?page=reunion&idreunion=405) in October 17th about uncertainty and failure prediction with deep neural networks [[slides](https://chcorbi.github.io/files/prez_gdrisis_170919.pdf)]
 
 * **NEW** Code for ConfidNet is now available at [https://github.com/valeoai/ConfidNet](https://github.com/valeoai/ConfidNet) .
 
