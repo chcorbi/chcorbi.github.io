@@ -13,11 +13,11 @@ I am a PhD Student at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](htt
 
 ## UPDATES
 
-* **NEW** Talk at the GdR ISIS (CNRS) seminar [Théorie du deep learning](http://www.gdr-isis.fr/index.php?page=reunion&idreunion=405) in October 17th about uncertainty and failure prediction with deep neural networks [[slides](https://chcorbi.github.io/files/prez_gdrisis_170919.pdf)]
+* Talk at the GdR ISIS (CNRS) seminar [Théorie du deep learning](http://www.gdr-isis.fr/index.php?page=reunion&idreunion=405) in October 17th about uncertainty and failure prediction with deep neural networks [[slides](https://chcorbi.github.io/files/prez_gdrisis_170919.pdf)]
 
-* **NEW** Code for ConfidNet is now available at [https://github.com/valeoai/ConfidNet](https://github.com/valeoai/ConfidNet) .
+* Code for ConfidNet is now available at [https://github.com/valeoai/ConfidNet](https://github.com/valeoai/ConfidNet) .
 
-* **NEW** Our paper [Addressing Failure Prediction by Learning Model Confidence](https://papers.nips.cc/paper/8556-addressing-failure-detection-by-learning-model-confidence) has been accepted at NeurIPS 2019;
+* Our paper [Addressing Failure Prediction by Learning Model Confidence](https://papers.nips.cc/paper/8556-addressing-failure-detection-by-learning-model-confidence) has been accepted at NeurIPS 2019;
 
 * Started my PhD on *Robust and Multimodal Deep Learning for Autonomous Driving* in January 2019 at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](https://www.valeo.com/en/valeo-ai/), under the supervision of [Nicolas Thome](http://cedric.cnam.fr/~thomen) and [Patrick Pérez](https://ptrckprz.github.io/).
 
