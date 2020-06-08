@@ -11,7 +11,7 @@ author_profile: true
 
 {% include base_path %}
 
-[Addressing Failure Prediction by Learning Model Confidence](https://papers.nips.cc/paper/8556-addressing-failure-detection-by-learning-model-confidence)  
+[Addressing Failure Prediction by Learning Model Confidence](https://papers.nips.cc/paper/8556-addressing-failure-prediction-by-learning-model-confidence)  
 Charles Corbière, Nicolas Thome, Avner Bar-Hen, Matthieu Cord, Patrick Pérez  
 *NeurIPS 2019* [[code](https://github.com/valeoai/ConfidNet)]
 
