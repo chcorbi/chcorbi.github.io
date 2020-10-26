@@ -312,5 +312,5 @@ compress_html:
     envs: development
 
 scholar:
-  style: apa
+  style: _bibliography/apa-custom.csl
   locale: en

@@ -1,7 +1,7 @@
 ---
-title: "KL_Pred Decomposition"
+title: "Decomposition of $\\textrm{KL}_{\\textrm{Pred}}$"
 date: 2020-10-26
-permalink: /posts/2020/10/decompo/
+permalink: /posts/2020/10/klpred-decompo/
 tags:
   - Dirichlet Prior Networks
 ---
