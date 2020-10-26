@@ -24,6 +24,8 @@ Let $f^{\boldsymbol{\theta}}: \mathcal{X} \rightarrow \mathcal{X'}$ be a neural 
 where $\Gamma$ is the Gamma function,  $\forall c \in \mathcal{Y}, \alpha_j > 0$ , $\alpha_0 = \sum_c \alpha_c$ and $\sum_c z_c$ = 1 such that $\mathbf{z}$ lives in 
 the $(K-1)$-dimensional unit simplex $\triangle^{K-1}$.
 
+TTest
+
 References
 ----------
 
