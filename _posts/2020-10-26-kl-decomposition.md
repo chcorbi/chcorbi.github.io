@@ -66,6 +66,16 @@ $$
 
 (Note we ommit the dependence in $\boldsymbol{x}$ and $\boldsymbol{\hat{\theta}}$ in $\boldsymbol{\alpha}(\boldsymbol{x},\boldsymbol{\hat{\theta})}$ for clarity.)
 
+First, the *differential entropy* can be written as the negative KL-divergence between NN's output and the uniform Dirichlet distribution $\mathcal{U}(1)$:
+
+$$
+\begin{equation}
+\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ] = - \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \mathcal{U}(1) ) \Big )
+\end{equation}
+$$
+
+As stated in {% cite malinin2019 maximize-representation-gap2020 %}, the differential entropy measures the **epistemic uncertainty**. 
+
 When considering the reverse cross-entropy (RCE) term:
 
 $$
@@ -78,17 +88,55 @@ $$
 
 The first term depends only on the fixed target distribution $\boldsymbol{\gamma}^{\hat{y}}$ while the second term also consider logits values through $\boldsymbol{\alpha}$.
 
-The *differential entropy* can be written as the negative KL-divergence between NN's output and the uniform Dirichlet distribution $\mathcal{U}(1)$:
+
+### Case 1: $\\textrm{KL}_{\\textrm{Pred}}$
+
+We compute only the empirical exponential logit mean of the predicted class $\hat{y}$:
+
+$$
+\begin{equation*}
+    \boldsymbol{\gamma}^{(1)} = [\boldsymbol{\gamma}_1^{(1)},...,\boldsymbol{\gamma}_K^{(1)}] \quad \quad  \textrm{with}~~ \boldsymbol{\gamma}_c^{(1)}=
+    \begin{cases}
+    \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}_c, &\text{if}\ c=\hat{y} \\
+    1, &\ \text{else.}
+    \end{cases}
+\end{equation*}
+$$
+
+Hence, we can simplify RCE as:
 
 $$
 \begin{equation}
-\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ] = - \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \mathcal{U}(1) ) \Big )
+\textrm{RCE}^{(1)} = \log \Gamma(K) - \log \Gamma(\boldsymbol{\gamma}_{\hat{y}}^{(1)}+K-1) + \log \Gamma(\boldsymbol{\gamma}_{\hat{y}}^{(1)}) + (\boldsymbol{\gamma}_{\hat{y}}^{(1)} - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_{\hat{y}}))
 \end{equation}
 $$
 
-As stated in {% cite malinin2019 maximize-representation-gap2020 %}, the differential entropy measures the **epistemic uncertainty**. 
+We obtain the following figures for the decomposition and $\\textrm{KL}_{\\textrm{Pred}}$ criterion:
 
 ![visu_toy_klpred](/images/visu_toy_klpred.png)
+
+
+### Case 2: $\\textrm{KL}_{\\textrm{PredFull}}$
+
+We compute the full empirical vector as defined in the introductive part:
+
+$$
+\begin{equation*}
+    \boldsymbol{\gamma}^{(2)} = \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}
+\end{equation*}
+$$
+
+(Note that $\boldsymbol{\gamma}\_{\hat{y}}^{(2)} = \boldsymbol{\gamma}\_{\hat{y}}^{(1)}$.)
+
+In this case, there is no simplification as done previously. However, we can further decompose:
+
+$$
+\begin{equation}
+\textrm{RCE}^{(2)} = \textrm{RCE}^{(1)}  + \Big (- \log \Gamma \big ( \sum_{c \neq \hat{y}} (\boldsymbol{\gamma}_c^{(2)}-1 \big ) + \sum_{c \neq \hat{y}} \big ( \log \Gamma(\boldsymbol{\gamma}_c^{(2)}) + (\boldsymbol{\gamma}_c^{(2)} - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_c) \big ) \Big )
+\end{equation}
+$$
+
+![visu_toy_klpredfull](/images/visu_toy_klpredfull.png)
 
 References
 ----------
