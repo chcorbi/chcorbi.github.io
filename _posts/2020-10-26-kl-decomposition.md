@@ -3,7 +3,7 @@ title: "Decomposition of KL_Pred"
 date: 2020-10-26
 permalink: /posts/2020/10/klpred-decompo/
 tags:
-  - Dirichlet Prior Networks
+  - Dirichlet Networks
 ---
 
 Notations
@@ -21,7 +21,7 @@ Let $f^{\boldsymbol{\theta}}: \mathcal{X} \rightarrow \mathcal{X'}$ be a neural 
 Following {% cite malinin2018 %}, a NN explicitly parametrizes a distribution $p\_{\theta}(\mathbf{z} \vert \mathbf{x})$ over categorical probabilities on a simplex. For its conjugate properties with categorical distributions, we chose to model $p\_{\theta}(\mathbf{z} \vert \mathbf{x})$ as a Dirichlet distribution whose concentration parameters $\boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\theta}) = \exp (f^{\boldsymbol{\theta}}(\boldsymbol{x}))$ are given by the output of the NN:
 \begin{equation}
     p_{\theta}(\mathbf{z} \vert \mathbf{x} = \boldsymbol{x}) = \mathrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\theta}) \big )
-    = \frac{\Gamma(\alpha_0 (\boldsymbol{x}, \boldsymbol{\theta}))}{\prod_c \Gamma(\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}))} \prod_{j=1}^K z_j^{\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}) - 1}
+    = \frac{\Gamma(\alpha_0 (\boldsymbol{x}, \boldsymbol{\theta}))}{\prod_c \Gamma(\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}))} \prod_{c=1}^K z_j^{\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}) - 1}
 \end{equation}
 where $\Gamma$ is the Gamma function,  $\forall c \in \mathcal{Y}, \alpha_j > 0$ , $\alpha_0 = \sum_c \alpha_c$ and $\sum_c z_c$ = 1 such that $\mathbf{z}$ lives in 
 the $(K-1)$-dimensional unit simplex $\triangle^{K-1}$.
