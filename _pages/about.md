@@ -13,7 +13,7 @@ I am a PhD Student at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](htt
 
 ## UPDATES
 
-* *2020.11:* We have a 6-month research internship opportunity for an exciting project on Dirichlet networks and out-of-distribution detection. Details available [here](https://chcorbi.github.io/files/2021_internship_dirichlet_networks.pdf). If interested, contact [me](mailto:charles.corbiere@valeo.com) or my PhD advisor, [Nicolas Thome](mailto:nicolas.thome@cnam.fr).
+* *2020.11:* We have a 6-month research internship to work on an exciting project about Dirichlet networks and out-of-distribution detection. Details available [here](https://chcorbi.github.io/files/2021_internship_dirichlet_networks.pdf). If interested, contact [me](mailto:charles.corbiere@valeo.com) or my PhD advisor, [Nicolas Thome](mailto:nicolas.thome@cnam.fr).
 
 * *2019.10:* Talk at the GdR ISIS (CNRS) seminar [Théorie du deep learning](http://www.gdr-isis.fr/index.php?page=reunion&idreunion=405) in October 17th about uncertainty and failure prediction with deep neural networks [[slides](https://chcorbi.github.io/files/prez_gdrisis_170919.pdf)]
 
