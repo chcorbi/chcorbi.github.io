@@ -1,6 +1,6 @@
 ---
-title: "Preparation on Dirichlet - ICML 2020"
-date: 2020-11-12
+title: "Preparation on Dirichlet - ICML 2021"
+date: 2020-11-26
 permalink: /posts/2020/11/dirichlet-icml/
 tags:
   - Dirichlet Networks
@@ -45,7 +45,7 @@ Contributions <a name="contributions"></a>
 ------
 
 ### Summary
-* A new total uncertainty measure, $$\textrm{KL}_{\textrm{Pred}}$$, with properties similar to MCP but for Dirichlet Networks
+* A new total uncertainty measure for Dirichlet Networks, $$\textrm{KL}_{\textrm{Pred}}$$, with properties similar to MCP
 * $$\textrm{KL}_{\textrm{Pred}}$$ can be decomposed into two terms which allow to distinguish aleatoric and epistemic uncertianty
 * This new criterion enable to consider an improved version based on the *ground-truth* class and which improves misclassification detection
 
@@ -124,6 +124,8 @@ where $$\boldsymbol{\gamma}_{y^*}$$ corresponds to a Dirichlet distribution whos
 
 However, the true class of an output is obviously not available when estimating confidence on test samples. We propose to learn $$\textrm{KL}_{\textrm{True}}$$ by introducing an auxiliary confidence neural network, termed *KLNet*, with parameters $$\boldsymbol{\omega}$$, which outputs a confidence prediction $$\hat{c}(\boldsymbol{x}, \boldsymbol{\omega})$$.
 
+
+**Now we can justify than *KLNet* improves total uncertainty by better evaluating aleatoric uncertainty. Nevertheless, we have no guarantees about epistemic uncertainty. Plus, current KLNet training doesn't take into account OOD samples.**
 
 
 Experiments <a name="experiments"></a>
