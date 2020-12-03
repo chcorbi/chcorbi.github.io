@@ -142,18 +142,109 @@ Two models were trained:
 * Out-distribution training dataset: CIFAR-100
 * Network Architecture: VGG-16
 * Concentrations parameters $\alpha= \exp{f(x, \theta)}$
-* Target concentrations for in-domain: $$\beta_{\text{in}}$$ = 100
+* Target concentrations for in-domain: $$\beta_{\text{in}}$$ = 10
 * Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs
 
-Accuracy is 93.5% for XE model and 93.0% for Dirichlet model.
+Accuracy is 93.5% for XE model and 92.9% for Dirichlet model.
 
 Presented results are for **TinyImageNet** as OOD dataset (% AUC)
 
 | Training | Method | Mis. Detection | OOD Detection | Mis.+OOD Detection |
 | :------: |:-------| --------------:| -------------:| ------------------:|
-| **XE**   | MCP<br>ODIN<br>Mahalanobis | $\boldsymbol{92.6\%}$<br>$91.4\%$<br>$90.2\%$ | $86.8\%$<br>$88.2\%$<br>$83.0\%$ | $91.2\%$<br>$91.1\%$<br>$87.8\%$ |
-| **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>KL\_Pred\_Full<br>KLNet_MSE<br>KLNet_MSE_Cloning | $91.6\%$<br>$91.6\%$<br>$91.2\%$<br>$92.1\%$<br>$92.0\%$<br>$92.3\%$<br>$\boldsymbol{92.5\%}$  | $92.8\%$<br>$\boldsymbol{92.9\%}$<br>$\boldsymbol{92.9\%}$<br>$86.6\%$<br>$92.4\%$<br>$92.7\%$<br>$92.8\%$<br> | $93.1\%$<br>$93.1\%$<br>$92.9\%$<br>$91.1\%$<br>$93.1\%$<br>$93.4\%$<br>$\boldsymbol{93.5\%}$ | 
+| **XE**   | MCP<br>ODIN<br>Mahalanobis | $92.6\%$<br>$91.4\%$<br>$90.2\%$ | $86.8\%$<br>$88.2\%$<br>$83.0\%$ | $91.2\%$<br>$91.1\%$<br>$87.8\%$ |
+| **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>**KLNet (Ours)** | $91.6\%$<br>$91.6\%$<br>$91.2\%$<br>$92.1\%$<br>$\boldsymbol{93.7\%}$  | $92.8\%$<br>$92.9\%$<br>$92.9\%$<br>$86.6\%$<br>$\boldsymbol{93.3\%}$<br> | $93.1\%$<br>$93.1\%$<br>$92.9\%$<br>$91.1\%$<br>$\boldsymbol{94.5\%}$ | 
 
+
+##### Effect of the computed mean $$\gamma^{(\hat{y})}$$
+
+We have three cases about how to compute the target distribution in the criterion  $\\textrm{KL}\_{\\textrm{Pred}}$
+
+* **KL\_Original**: Take exactly the target distribution use in training:
+
+$$
+\begin{equation*}
+ \gamma^{(0, \hat{y})} = \big [ 1,..., \beta_{\text{in}},...,1 \big ]
+\end{equation*}
+$$
+
+* **KL\_Full**: Compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$ and use **all values**:
+
+$$
+\begin{equation*}
+    \boldsymbol{\gamma}^{(1, \hat{y})} = \frac{1}{N^{(\hat{y})}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f(\boldsymbol{x}_i,\boldsymbol{\hat{\theta}}))
+\end{equation*}
+$$
+
+where $N^{(\hat{y})}$ is the number of training samples with label $\hat{y}$.
+
+* **KL\_Pred**: Compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$ and use **only the $\hat{y}$-value**:
+
+$$
+\begin{equation*}
+    \boldsymbol{\gamma}^{(2, \hat{y})} = \big [ 1,..., \boldsymbol{\gamma}^{(1, \hat{y})}[\hat{y}],...,1 \big ]
+\end{equation*}
+$$
+
+Results using the Dirichlet model trained with $$\beta_{\text{in}}=10$$ are available in the table below:
+
+| Method         |  Mis. Detection | OOD Detection | Mis.+OOD Detection |
+| :------------- | --------------: | ------------: | -----------------: |
+| KL\_Original   | $92.6\%$        | $93.0\%$      | $93.7\%$           |
+| KL\_Pred       | $92.5\%$        | $93.2\%$      | $92.8\%$           |
+| KL\_Full       | $92.2\%$        | $93.2\%$      | $93.6\%$           |
+
+Actually, I observe that using more complicated form of target distribution do not impact performance.
+
+
+##### Effect of $$\beta_{\text{in}}$$
+
+We vary the chosen value for in-domain target concentrations $$\beta_{\text{in}}$$ from 10 to 10,000. Below are the results for the criterion KL\_Original:
+
+| $$\beta_{\text{in}}$$ | Accuracy  | Mis. Detection | OOD Detection | Mis.+OOD Detection |
+| :-------------------: | -------: | --------------:| -------------:| ------------------:|
+| 10                    | $92.9\%$  | $92.6\%$       | $93.0\%$      | $93.7\%$           |
+| 100                   | $93.0\%$  | $91.7\%$       | $92.2\%$      | $92.8\%$           |
+| 1000                  | $93.5\%$  | $90.2\%$       | $90.3\%$      | $91.1\%$           |
+| 10000                 | $92.6\%$  | $88.5\%$       | $88.1\%$      | $89.3\%$           |
+
+We also note that the lower $$\beta_{\text{in}}$$ is, the less confident in-domain softmax probabilities will be. For instance, in the case of $$\beta_{\text{in}}=10$$, they range from $0.1$ to $0.57$.
+
+> When $$\beta_{\text{in}} \geq 100$$, KL\_Original becomes worse compared to KL\_Pred or KL\_Full. This may be due to the fact that logits variation are important, making them deviate from the original target distribution.
+
+
+##### Empirical evaluation of the decomposed measures
+
+The criterion $\\textrm{KL}\_{\\textrm{Pred}}$ actually correspond to the negative reverse KL-divergence used in training. Hence, it can be decomposed into the reverse cross-entropy and the differential entropy:
+
+$$
+\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = - \underbrace{\mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{\hat{y}} \big ) \Big ]}_\text{Reverse Cross-Entropy} + \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}
+$$
+
+In the synthetic experiment, we observe that the differential entropy correlates with the **epistemic uncertainty** and the reverse cross-entropy (RCE) correlates with the **aleatoric uncertainty**.
+
+We use those decomposed metric here to evaluate their effectiveness on misclassification detection and OOD detection in the following table.
+(Experiment done using the Dirichlet model trained with $$\beta_{\text{in}}=10$$)
+
+| Method         |  Mis. Detection | OOD Detection | 
+| :------------- | --------------: | ------------: |
+| RCE            | $91.3\%$        | $92.8\%$      | 
+| Diff. Ent.     | $91.2\%$        | $92.8\%$      | 
+| KL\_Original   | $92.6\%$        | $93.0\%$      |
+
+It doesn't seem RCE or differential entropy are more inclined to measure one type of uncertainty. Only thing we can conlude is that combine them into KL\_Original improves performances.
+
+
+##### Ablation study
+
+As observed in our Neurips submission, KLNet mainly improves misclassification detection, with a slight but uncontrolled benefit on OOD detection:
+
+| Method         |  Mis. Detection | OOD Detection | Mis.+OOD Detection |
+| :------------- | --------------: | ------------: | -----------------: |
+| KL\_Original   | $92.6\%$        | $93.0\%$      | $93.7\%$           |
+| KLNet_Classic  | $93.0\%$        | $93.3\%$      | $94.0\%$           |
+| KLNet_Cloning  | $93.7\%$        | $93.3\%$      | $94.5\%$           |
 
 
 ### CIFAR-100
@@ -165,11 +256,15 @@ Presented results are for **TinyImageNet** as OOD dataset (% AUC)
 * Target concentrations for in-domain: $$\beta_{\text{in}}$$ = 100
 * Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs
 
-Accuracy is 73.2% for XE model and 72.0% for Dirichlet model.
+Accuracy is 73.2% for XE model and 71.5% for Dirichlet model.
 
 Presented results are for **TinyImageNet** as OOD dataset (% AUC)
 
 | Training | Method | Mis. Detection | OOD Detection | Mis.+OOD Detection |
 | :------: |:-------| --------------:| -------------:| ------------------:|
-| **XE**   | MCP<br>ODIN<br>Mahalanobis | $\boldsymbol{87.3\%}$<br>$85.7\%$<br>$81.8\%$ | $75.9\%$<br>$\boldsymbol{77.7\%}$<br>$74.3\%$ | $86.5\%$<br>$86.1\%$<br>$82.2\%$ |
-| **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>KL\_Pred\_Full<br>KLNet_MSE<br>KLNet_MSE_Cloning | $84.0\%$<br>$83.9\%$<br>$83.3\%$<br>$87.2\%$<br>$\boldsymbol{88.0\%}$<br><br><br>  | $75.9\%$<br>$75.8\%$<br>$75.8\%$<br>$74.1\%$<br>$77.5\%$<br><br><br> | $84.6\%$<br>$84.5\%$<br>$84.2\%$<br>$86.7\%$<br>$\boldsymbol{87.8\%}$<br><br><br> | 
+| **XE**   | MCP<br>ODIN<br>Mahalanobis | $86.6\%$<br>$84.9\%$<br>$80.9\%$ | $75.9\%$<br>$77.4\%$<br>$73.3\%$ | $86.0\%$<br>$85.4\%$<br>$81.3\%$ |
+| **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>**KL\_Original**<br>**KLNet**<br>**KLNet_Cloning** | $83.7\%$<br>$83.7\%$<br>$82.8\%$<br>$83.4\%$<br>$87.3\%$<br>$86.8\%$<br>$\boldsymbol{87.6\%}$ | $76.0\%$<br>$76.0\%$<br>$76.0\%$<br>$71.9\%$<br>$77.0\%$<br>$76.9\%$<br>$\boldsymbol{77.8\%}$ | $84.3\%$<br>$84.3\%$<br>$83.8\%$<br>$82.9\%$<br>$87.3\%$<br>$86.8\%$<br>$\boldsymbol{87.8\%}$ | 
+
+
+> Training details
+> * on CIFAR-100, KLNet training without weight decay, then add it on second cloning phase (optionally disabling data augmentation)
