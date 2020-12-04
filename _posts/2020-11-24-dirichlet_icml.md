@@ -253,7 +253,7 @@ As observed in our Neurips submission, KLNet mainly improves misclassification d
 * Out-distribution training dataset: CIFAR-10
 * Network Architecture: VGG-16
 * Concentrations parameters $\alpha= \exp{f(x, \theta)}$
-* Target concentrations for in-domain: $$\beta_{\text{in}}$$ = 100
+* Target concentrations for in-domain: $$\beta_{\text{in}}$$ = 10
 * Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs
 
 Accuracy is 73.2% for XE model and 71.5% for Dirichlet model.
