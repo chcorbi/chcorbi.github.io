@@ -448,15 +448,15 @@ $$
 \end{equation}
 $$
 
-The first term can be further derived as $$\mathbb{E}_{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})} = \psi(\alpha_y) - \psi(\alpha_0)$$. Regarding the KL-divergence with the prior, authors chose to set concentrations parameters $\boldsymbol{\beta} = 1$.
+The first term can be further derived as $$\mathbb{E}_{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \big ] \propto \psi(\alpha_y) - \psi(\alpha_0)$$. Regarding the KL-divergence with the prior, authors chose to set concentrations parameters $\boldsymbol{\beta} = 1$.
 
 Now what's interesting is that **$$\mathcal{L}_{\textrm{VI}}(\boldsymbol{\theta}) $$ actually corresponds to the reverse KL-divergence loss Eq.(\ref{eq:reverse-kl}) for in-domain samples!**
 
-> We can show that given uniform concentration parameters, the KL-divergence between the variational distribution and the prior distribution over probabilities is equivalen to compute the differential entropy of the variational distribution: 
+> We can show that given uniform concentration parameters, the KL-divergence between the variational distribution and the uniform prior distribution over probabilities is equivalent to compute the differential entropy of the variational distribution: 
 >
 > $$
 > \begin{equation}
-> \mathrm{KL} \big (q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  = \mathcal{H} \big [ q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \big ]
+> \mathrm{KL} \big (q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  = - \mathcal{H} \big [ q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \big ] + \log \Gamma(K)
 > \end{equation}
 >$$
 
