@@ -151,7 +151,7 @@ Presented results are for **TinyImageNet** as OOD dataset (% AUC)
 
 | Training | Method | Mis. Detection | OOD Detection | Mis.+OOD Detection |
 | :------: |:-------| --------------:| -------------:| ------------------:|
-| **XE**   | MCP<br>ODIN<br>Mahalanobis | $92.6\%$<br>$91.4\%$<br>$90.2\%$ | $86.8\%$<br>$88.2\%$<br>$83.0\%$ | $91.2\%$<br>$91.1\%$<br>$87.8\%$ |
+| **XE**   | MCP<br>ODIN<br>Mahalanobis<br>ConfidNet | $92.6\%$<br>$91.4\%$<br>$90.2\%$<br>$92.6\%$ | $86.8\%$<br>$88.2\%$<br>$83.0\%$<br>$87.8\%$ | $91.2\%$<br>$91.1\%$<br>$87.8\%$<br>$91.6\%$ |
 | **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>ConfidNet<br>**KLNet (Ours)** | $91.6\%$<br>$91.6\%$<br>$91.2\%$<br>$92.1\%$<br>$93.5\%$<br>$\boldsymbol{93.7\%}$  | $92.8\%$<br>$92.9\%$<br>$92.9\%$<br>$86.6\%$<br>$93.1\%$<br>$\boldsymbol{93.3\%}$<br> | $93.1\%$<br>$93.1\%$<br>$92.9\%$<br>$91.1\%$<br>$94.2\%$<br>$\boldsymbol{94.5\%}$ | 
 
 
@@ -262,10 +262,10 @@ Presented results are for **TinyImageNet** as OOD dataset (% AUC)
 
 | Training | Method | Mis. Detection | OOD Detection | Mis.+OOD Detection |
 | :------: |:-------| --------------:| -------------:| ------------------:|
-| **XE**   | MCP<br>ODIN<br>Mahalanobis | $86.6\%$<br>$84.9\%$<br>$80.9\%$ | $75.9\%$<br>$77.4\%$<br>$73.3\%$ | $86.0\%$<br>$85.4\%$<br>$81.3\%$ |
+| **XE**   | MCP<br>ODIN<br>Mahalanobis<br> | $86.6\%$<br>$84.9\%$<br>$80.9\%$ | $75.9\%$<br>$77.4\%$<br>$73.3\%$ | $86.0\%$<br>$85.4\%$<br>$81.3\%$ |
 | **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>**KL\_Original**<br>**KLNet**<br>**KLNet_Cloning** | $83.7\%$<br>$83.7\%$<br>$82.8\%$<br>$83.4\%$<br>$87.3\%$<br>$86.8\%$<br>$\boldsymbol{87.6\%}$ | $76.0\%$<br>$76.0\%$<br>$76.0\%$<br>$71.9\%$<br>$77.0\%$<br>$76.9\%$<br>$\boldsymbol{77.8\%}$ | $84.3\%$<br>$84.3\%$<br>$83.8\%$<br>$82.9\%$<br>$87.3\%$<br>$86.8\%$<br>$\boldsymbol{87.8\%}$ | 
 
 
 > Training details
-> * on CIFAR-100, KLNet training without weight decay, then add it on second cloning phase (optionally disabling data augmentation)
-> * same for ConfidNet on CIFAR-10 without data augmentation when cloning
+> * on CIFAR-10, KLNet training without weight decay, then add it on second cloning phase and disable data augmentation
+> * same for ConfidNet on CIFAR-10
