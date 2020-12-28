@@ -7,7 +7,7 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Charles Corbière's personal page"
+title                    : "Charles Corbière's page"
 title_separator          : "-"
 name                     : &name "Charles Corbière"
 description              : &description "PhD Student at CNAM / valeo.ai"
