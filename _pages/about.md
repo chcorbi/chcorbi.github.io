@@ -13,7 +13,7 @@ I am a PhD Student at [CEDRIC](https://cedric.cnam.fr) (CNAM) and [valeo.ai](htt
 
 ## UPDATES
 
-* *2021.01:* Looking forward to attend the great lectures and to meet passionate people at the [Mediterranean Machine Learning Summer School] from January 11th to January 16th!
+* *2021.01:* Looking forward to attend the great lectures and to meet passionate people at the [Mediterranean Machine Learning Summer School](https://www.m2lschool.org) from January 11th to January 16th!
 
 * *2020.12:* Our new paper on using auxiliary models to better estimate confidence of neural networks available [here](https://arxiv.org/abs/2012.06508). We extend ConfidNet's approach to self-training in unsupervised domain adaptation for semantic segmentation interested.
 

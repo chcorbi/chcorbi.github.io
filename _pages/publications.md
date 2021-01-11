@@ -11,7 +11,7 @@ You can also find my articles on my <a href="{{author.googlescholar}}">Google Sc
 ![fig4](/images/paper_auxiliary.png){: height="280px" width="280px" style="float: left; margin-right:2em; vertical-align:middle"}
 [Confidence Estimation via Auxiliary Models](https://arxiv.org/abs/2012.06508)  
 Charles Corbière, Nicolas Thome, Matthieu Cord, Patrick Pérez  
-*Under review at TPAMI*
+*Pre-print, under review at TPAMI*
 {:style="clear: left"}
 
 <br/><br/>
