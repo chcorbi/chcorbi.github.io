@@ -9,7 +9,8 @@ tags:
 ## Table of contents
 1. [Context](#context)
 2. [Contributions](#contributions)
-3. [Experiments](#experiments)
+3. [Thought experiment with Gaussian distributions](#gaussian)
+4. [Experiments](#experiments)
 
 
 Context <a name="context"></a>
@@ -128,7 +129,53 @@ However, the true class of an output is obviously not available when estimating 
 **Now we can justify than *KLNet* improves total uncertainty by better evaluating aleatoric uncertainty. Nevertheless, we have no guarantees about epistemic uncertainty. Plus, current KLNet training doesn't take into account OOD samples.**
 
 
-Experiments <a name="experiments"></a>
+Thought experiment with Gaussian distributions <a name="gaussian"></a>
+------
+
+Let's suppose the random variable over categorical probabilities $\boldsymbol{\pi} =[\pi_1,...,\pi_C]$ is now parametrize as a $K$-multivariate Gaussian distribution:
+
+$$
+\begin{equation}
+	p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) = \mathcal{N}(\boldsymbol{\pi} \vert \boldsymbol{\mu_1}, \boldsymbol{\Sigma_1})
+\end{equation}
+$$
+
+For instance, an output of a neural network could be $\boldsymbol{\mu_1} = [0.98, 0.01, .01]$ and $\boldsymbol{\Sigma_1}$ = [0.05, 0.03, 0.02].
+
+> On a related matter, {% cite kendall2017 %} propose in classification to consider a Gaussian over $\boldsymbol{\pi} \vert \boldsymbol{w}$ and parametrized by a NN outputing logits $f(\boldsymbol{x}, \boldsymbol{w})$ (e.g  $[98.1, 1.2, 1.3]$) and a scalar $\boldsymbol{\sigma}$ (e.g $[2.1,0.6,3.3]$). Mean probabilities corresponds to the softmax of the mean corrupted by Gaussian noise:
+>
+>$$
+>\begin{equation}
+>	\boldsymbol{\hat{\pi}}_t = \mathrm{Softmax}(\boldsymbol{\pi}_t)~~~~\mathrm{with }~ \boldsymbol{\pi}_t = f(\boldsymbol{x}, \boldsymbol{w}) +\boldsymbol{\sigma}\epsilon_t,~~~\epsilon_t \sim \mathcal{N}(0,I)
+>\end{equation}
+>$$
+
+
+On the simplex, the distribution can be represented with $\boldsymbol{\mu_1}$ as its center position and dispersion corresponds to $\boldsymbol{\Sigma_1}$.
+Predictions are based on the argmax of the mean parameter, which is the first moment of the distribution:
+
+$$
+\begin{equation}
+\hat{y} = arg\,max_{c}~ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})}[y] = arg\,max_{c}~ \boldsymbol{\mu_1}
+\end{equation}
+$$
+
+In this case, **the entropy corresponds to computing the entropy on the mean of the distribution**: $\mathcal{H} \big [ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})}[y] \big ]$.
+
+To reflect epistemic uncertainty, we should also consider the second moment of the distribution $\boldsymbol{\Sigma_1}$. For instance, the higher $\boldsymbol{\Sigma_1}[\hat{y}]$ is, the higher would be the epistemic uncertainty.
+
+In order to consider both aleatoric and epistemic uncertainty, we could try to derive some statistics on $p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})$. Given a target distribution $p(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2}) = \mathcal{N}(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2})$ also Gaussian, the **KL-divergence** between the two distributions is:
+
+$$
+\begin{align}
+\mathrm{KL} \big [ p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) \vert \vert p(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2})] = \frac{1}{2} \Big (\log \vert\boldsymbol{\Sigma_2}\vert - &\log \vert\boldsymbol{\Sigma_1}\vert - K + tr( \boldsymbol{\Sigma_2}^{-1} \boldsymbol{\Sigma_1}) \\ \nonumber
+ &+ (\boldsymbol{\mu_2} - \boldsymbol{\mu_1})\boldsymbol{\Sigma_2}^{-1}(\boldsymbol{\mu_2}-\boldsymbol{\mu_1}) \Big ) 
+\end{align}
+$$
+
+Setting aside the terms which do not depend on the input, we can identity two term. The first one relates to the first moment of the distribution, $(\boldsymbol{\mu_2}-\boldsymbol{\mu_1})\boldsymbol{\Sigma_2}^{-1}(\boldsymbol{\mu_2}-\boldsymbol{\mu_1})$ and the second one involves only the variance $- \log \vert\boldsymbol{\Sigma_1}\vert + tr( \boldsymbol{\Sigma_2}^{-1} \boldsymbol{\Sigma_1})$.
+
+Empirical Experiments <a name="experiments"></a>
 ------
 
 Two models were trained:
@@ -269,3 +316,9 @@ Presented results are for **TinyImageNet** as OOD dataset (% AUC)
 > Training details
 > * on CIFAR-10, KLNet training without weight decay, then add it on second cloning phase and disable data augmentation
 > * same for ConfidNet on CIFAR-10
+
+
+References
+----------
+
+{% bibliography --cited %}
