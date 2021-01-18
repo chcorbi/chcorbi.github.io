@@ -194,12 +194,17 @@ Two models were trained:
 
 Accuracy is 93.5% for XE model and 92.9% for Dirichlet model.
 
-Presented results are for **TinyImageNet** as OOD dataset (% AUC)
+Presented results are for **TinyImageNet** as OOD dataset (% AUC), $\beta=100$ for standard Dirichlet models and $\beta=10$ for contrastive Dirichlet models
 
 | Training | Method | Mis. Detection | OOD Detection | Mis.+OOD Detection |
 | :------: |:-------| --------------:| -------------:| ------------------:|
-| **XE**   | MCP<br>ODIN<br>Mahalanobis<br>ConfidNet | $92.6\%$<br>$91.4\%$<br>$90.2\%$<br>$92.6\%$ | $86.8\%$<br>$88.2\%$<br>$83.0\%$<br>$87.8\%$ | $91.2\%$<br>$91.1\%$<br>$87.8\%$<br>$91.6\%$ |
-| **Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>ConfidNet<br>**KLNet (Ours)** | $91.6\%$<br>$91.6\%$<br>$91.2\%$<br>$92.1\%$<br>$93.5\%$<br>$\boldsymbol{93.7\%}$  | $92.8\%$<br>$92.9\%$<br>$92.9\%$<br>$86.6\%$<br>$93.1\%$<br>$\boldsymbol{93.3\%}$<br> | $93.1\%$<br>$93.1\%$<br>$92.9\%$<br>$91.1\%$<br>$94.2\%$<br>$\boldsymbol{94.5\%}$ | 
+| **Standard-XE**   | MCP<br>ODIN<br>Mahalanobis<br>ConfidNet | $92.6\%$<br>$91.4\%$<br>$88.9\%$<br>$\boldsymbol{92.6\%}$ | $87.5\%$<br>$\boldsymbol{89.1\%}$<br>$83.0\%$<br>$87.8\%$ | $90.5\%$<br>$\boldsymbol{91.5\%}$<br>$85.7\%$<br>$91.6\%$ |
+| **Standard-Dirichlet**   | MCP<br>ODIN<br>Mahalanobis<br>Mutual Information<br>ConfidNet<br>$\textrm{KL}_{\textrm{Pred}}$ (Ours) <br>**KLNet (Ours)** | $82.0\%$<br>$81.1\%$<br>$\boldsymbol{91.9\%}$<br>$74.0\%$<br>$.\%$<br>$91.4\%$<br>$91.3\%$ | $72.3\%$<br>$71.5\%$<br>$\boldsymbol{86.9\%}$<br>$66.0\%$<br>$.\%$<br>$84.3\%$<br>$84.1\%$ | $74.8\%$<br>$73.9\%$<br>$\boldsymbol{89.6\%}$<br>$67.8\%$<br>$.\%$<br>$87.5\%$<br>$87.4\%$ |
+
+| Training | Method | Mis. Detection | OOD Detection | Mis.+OOD Detection |
+| :------: |:-------| --------------:| -------------:| ------------------:|
+| **Contrastive-XE**   | MCP<br>ODIN<br>ConfidNet | $92.5\%$<br>$92.0\%$<br>$92.7\%$ | $\boldsymbol{94.0\%}$<br>$94.1\%$<br>$94.1\%$ | $\boldsymbol{95.4\%}$<br>$95.4\%$<br>$95.5\%$ |
+| **Contrastive-Dirichlet** | MCP<br>ODIN<br>Mutual Information<br>Mahalanobis<br>ConfidNet<br>$\textrm{KL}_{\textrm{Pred}}$ (Ours) <br>**KLNet (Ours)** | $92.1\%$<br>$92.1\%$<br>$91.9\%$<br>$91.4\%$<br>$92.8\%$<br>$92.1\%$<br>$\boldsymbol{93.2\%}$  | $93.2\%$<br>$93.2\%$<br>$93.2\%$<br>$83.3\%$<br>$93.6\%$<br>$93.2\%$<br>$\boldsymbol{93.6\%}$ | $94.9\%$<br>$94.9\%$<br>$94.8\%$<br>$95.1\%$<br>$95.2\%$<br>$94.9\%$<br>$\boldsymbol{95.3\%}$ | 
 
 
 ##### Effect of the computed mean $$\gamma^{(\hat{y})}$$
