@@ -1,0 +1,617 @@
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+
+<meta charset="utf-8">
+
+
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Decomposition of KL_Pred - Charles Corbière’s page</title>
+
+
+
+
+
+
+
+<meta property="og:locale" content="en-US">
+<meta property="og:site_name" content="Charles Corbière's page">
+<meta property="og:title" content="Decomposition of KL_Pred">
+
+
+  <link rel="canonical" href="https://chcorbi.github.io/posts/2020/10/klpred-decompo/">
+  <meta property="og:url" content="https://chcorbi.github.io/posts/2020/10/klpred-decompo/">
+
+
+
+  <meta property="og:description" content="Notations">
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2020-10-26T00:00:00-07:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "Charles Corbière",
+      "url" : "https://chcorbi.github.io",
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="https://chcorbi.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Charles Corbière's page Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://chcorbi.github.io/assets/css/main.css">
+
+<meta http-equiv="cleartype" content="on">
+    
+
+<!-- start custom head snippets -->
+
+<link rel="apple-touch-icon" sizes="57x57" href="https://chcorbi.github.io/images/apple-touch-icon-57x57.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="60x60" href="https://chcorbi.github.io/images/apple-touch-icon-60x60.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="72x72" href="https://chcorbi.github.io/images/apple-touch-icon-72x72.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="76x76" href="https://chcorbi.github.io/images/apple-touch-icon-76x76.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="114x114" href="https://chcorbi.github.io/images/apple-touch-icon-114x114.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="120x120" href="https://chcorbi.github.io/images/apple-touch-icon-120x120.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="144x144" href="https://chcorbi.github.io/images/apple-touch-icon-144x144.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="152x152" href="https://chcorbi.github.io/images/apple-touch-icon-152x152.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="180x180" href="https://chcorbi.github.io/images/apple-touch-icon-180x180.png?v=M44lzPylqQ">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/favicon-32x32.png?v=M44lzPylqQ" sizes="32x32">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/android-chrome-192x192.png?v=M44lzPylqQ" sizes="192x192">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/favicon-96x96.png?v=M44lzPylqQ" sizes="96x96">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/favicon-16x16.png?v=M44lzPylqQ" sizes="16x16">
+<link rel="manifest" href="https://chcorbi.github.io/images/manifest.json?v=M44lzPylqQ">
+<link rel="mask-icon" href="https://chcorbi.github.io/images/safari-pinned-tab.svg?v=M44lzPylqQ" color="#000000">
+<link rel="shortcut icon" href="/images/favicon.ico?v=M44lzPylqQ">
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="msapplication-TileImage" content="https://chcorbi.github.io/images/mstile-144x144.png?v=M44lzPylqQ">
+<meta name="msapplication-config" content="https://chcorbi.github.io/images/browserconfig.xml?v=M44lzPylqQ">
+<meta name="theme-color" content="#ffffff">
+<link rel="stylesheet" href="https://chcorbi.github.io/assets/css/academicons.css"/>
+
+<script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "AMS" } } }); </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <button><div class="navicon"></div></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://chcorbi.github.io/">Charles Corbière's page</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="https://chcorbi.github.io/publications/">Publications</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="https://chcorbi.github.io/teaching/">Teaching</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="https://chcorbi.github.io/files/cv_corbiere_en.pdf">CV</a></li>
+          
+        </ul>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <div class="sidebar sticky">
+  
+
+
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  <div class="author__avatar">
+    
+    	<img src="https://chcorbi.github.io/images/profile.jpg" class="author__avatar" alt="Charles Corbière">
+    
+  </div>
+
+  <div class="author__content">
+    <h3 class="author__name">Charles Corbière</h3>
+    <p class="author__bio">PhD Student at CNAM / valeo.ai</p>
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Paris, France</li>
+      
+      
+      
+      
+        <li><a href="mailto:charles.corbiere[at]valeo.com"><i class="fas fa-fw fa-envelope" aria-hidden="true"></i> Email</a></li>
+      
+      
+       
+      
+      
+      
+      
+        <li><a href="https://www.linkedin.com/in/charles-corbière-6167015b"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> LinkedIn</a></li>
+      
+      
+      
+      
+      
+      
+        <li><a href="https://github.com/chcorbi"><i class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+        <li><a href="https://scholar.google.fr/citations?user=UcnFUZ8AAAAJ&hl=en"><i class="fas fa-fw fa-graduation-cap"></i> Google Scholar</a></li>
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Decomposition of KL_Pred">
+    <meta itemprop="description" content="Notations">
+    <meta itemprop="datePublished" content="October 26, 2020">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Decomposition of KL_Pred
+</h1>
+          
+            <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+  
+	  5 minute read
+	
+</p>
+          
+        
+        
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Published:</strong> <time datetime="2020-10-26T00:00:00-07:00">October 26, 2020</time></p>
+        
+        
+             
+        
+    
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <h2 id="notations">Notations</h2>
+
+<p>Let us consider a training dataset $\mathcal{D}$ consisting of $N$ <em>i.i.d.</em> samples,</p>
+
+\[\begin{equation*} \mathcal{D}= \{ (\boldsymbol{x}_i, y^*_i) \}_{i=1}^N \in (\mathcal{X} \times \mathcal{Y})^N \end{equation*}\]
+
+<p>where $\mathcal{X}$ represents the input space and $\mathcal{Y}={1,\ldots,K}$ is a set of labels. <br />
+Samples drawn from $\mathcal{D}$ follow an unknown conditional probability distribution $p(\mathbf{y} \vert \mathbf{x})$ where $\mathbf{x}$ and $\mathbf{y}$ are random variables over input space and label space respectively.</p>
+
+<p>Let $f^{\boldsymbol{\theta}}: \mathcal{X} \rightarrow \mathcal{X’}$ be a neural network (NN) parametrized by $\boldsymbol{\theta}$ where $\mathcal{X’} = \mathbb{R}^K$ is the logit space. We consider categorical probabilities over labels as random variable $\mathbf{z}$.</p>
+
+<p>Following <a class="citation" href="#malinin2018">(Malinin &amp; Gales, 2018)</a>, a NN explicitly parametrizes a distribution $p_{\theta}(\mathbf{z} \vert \mathbf{x})$ over categorical probabilities on a simplex. For its conjugate properties with categorical distributions, we chose to model $p_{\theta}(\mathbf{z} \vert \mathbf{x})$ as a Dirichlet distribution whose concentration parameters $\boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\theta}) = \exp (f^{\boldsymbol{\theta}}(\boldsymbol{x}))$ are given by the output of the NN:
+\begin{equation}
+    p_{\theta}(\mathbf{z} \vert \mathbf{x} = \boldsymbol{x}) = \mathrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\theta}) \big )
+    = \frac{\Gamma(\alpha_0 (\boldsymbol{x}, \boldsymbol{\theta}))}{\prod_c \Gamma(\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}))} \prod_{c=1}^K z_j^{\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}) - 1}
+\end{equation}
+where $\Gamma$ is the Gamma function,  $\forall c \in \mathcal{Y}, \alpha_j &gt; 0$ , $\alpha_0 = \sum_c \alpha_c$ and $\sum_c z_c$ = 1 such that $\mathbf{z}$ lives in 
+the $(K-1)$-dimensional unit simplex $\triangle^{K-1}$.</p>
+
+<h2 id="textrmkl_textrmpred-criterion">$\textrm{KL}_{\textrm{Pred}}$ criterion</h2>
+
+<p>We propose an uncertainty criterion, denoted $\textrm{KL}_{\textrm{Pred}}$, which measures the KL-divergence between NN’s output and a sharp Dirichlet distribution with concentration parameters $\boldsymbol{\gamma}_{\hat{y}}$ focused on the <em>predictive</em> class $\hat{y}$:</p>
+
+\[\begin{equation}
+    \textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}^{\hat{y}} \big ) \Big )
+\end{equation}\]
+
+<p>To ensure an accurate estimation of concentration parameters $\boldsymbol{\gamma}^{\hat{y}}$, we compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$:</p>
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{\hat{y}} = \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f^{\boldsymbol{\hat{\theta}}}(\boldsymbol{x}_i))
+\end{equation*}\]
+
+<p>where $N^{\hat{y}}$ is the number of training samples with label $\hat{y}$.</p>
+
+<p><img src="/images/klpred_behavior.png" alt="simplex_behavior" /></p>
+
+<p>The lower $\textrm{KL}_{\textrm{Pred}}$ is, the more certain we are in the prediction. Previous figure illustrates the fact that correct predictions will have Dirichlet distributions similar to the computed mean distribution for the predicted class, and thus associated with a low uncertainty measure. Misclassified predictions are expected to present different concentration parameters than the average computed on training set resulting in a higher $\textrm{KL}_{\textrm{Pred}}$ measure. In comparison, <em>differential entropy</em> is not adequate when it comes to detect misclassifications <a class="citation" href="#malinin2018">(Malinin &amp; Gales, 2018)</a> as it corresponds to measuring the KL-divergence of the model’s output and the maximum-entropy distribution, which is the uniform distribution on a simplex.</p>
+
+<h2 id="decomposition-into-aleatoric-and-epistemic-uncertainty">Decomposition into aleatoric and epistemic uncertainty</h2>
+
+<p>We note that $\textrm{KL}_{\textrm{Pred}}$ corresponds to the definition of reverse KL-divergence loss <a class="citation" href="#malinin2019">(Malinin &amp; Gales, 2019)</a>. It can be decomposed into the reverse cross-entropy and the negative differential entropy:</p>
+
+\[\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \underbrace{\mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{\hat{y}} \big ) \Big ]}_\text{Reverse Cross-Entropy} - \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}\]
+
+<p>(Note we ommit the dependence in $\boldsymbol{x}$ and $\boldsymbol{\hat{\theta}}$ in $\boldsymbol{\alpha}(\boldsymbol{x},\boldsymbol{\hat{\theta})}$ for clarity.)</p>
+
+<p>First, the <em>differential entropy</em> can be written as the negative KL-divergence between NN’s output and the uniform Dirichlet distribution $\mathcal{U}(1)$:</p>
+
+\[\begin{equation}
+\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ] = - \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \mathcal{U}(1) ) \Big )
+\end{equation}\]
+
+<p>As stated in <a class="citation" href="#malinin2019">(Malinin &amp; Gales, 2019; Nandy et al., 2020)</a>, the differential entropy measures the <strong>epistemic uncertainty</strong>.</p>
+
+<p>When considering the reverse cross-entropy (RCE) term:</p>
+
+\[\begin{align*}
+\textrm{RCE} &amp;= \mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha} \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}^{\hat{y}} \big ) \Big ] \\
+&amp;= - \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_0) + \sum_{c=1}^K \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_c) + \sum_{c=1}^K (\boldsymbol{\gamma}^{\hat{y}}_c - 1) \mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha} \big )} \big [\log(\boldsymbol{z}_c)] \\
+&amp;= \big ( \log \Gamma(K) - \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_0) + \sum_{c=1}^K \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_c) \big ) + \sum_{c=1}^K (\boldsymbol{\gamma}^{\hat{y}}_c - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_c))
+\end{align*}\]
+
+<p>The first term depends only on the fixed target distribution $\boldsymbol{\gamma}^{\hat{y}}$ while the second term also consider logits values through $\boldsymbol{\alpha}$.</p>
+
+<h3 id="case-1-textrmkl_textrmpred">Case 1: $\textrm{KL}_{\textrm{Pred}}$</h3>
+
+<p>We compute only the empirical exponential logit mean of the predicted class $\hat{y}$:</p>
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(1)} = [\boldsymbol{\gamma}_1^{(1)},...,\boldsymbol{\gamma}_K^{(1)}] \quad \quad  \textrm{with}~~ \boldsymbol{\gamma}_c^{(1)}=
+    \begin{cases}
+    \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}_c, &amp;\text{if}\ c=\hat{y} \\
+    1, &amp;\ \text{else.}
+    \end{cases}
+\end{equation*}\]
+
+<p>Hence, we can simplify RCE as:</p>
+
+\[\begin{equation}
+\textrm{RCE}^{(1)} = \log \Gamma(K) - \log \Gamma(\boldsymbol{\gamma}_{\hat{y}}^{(1)}+K-1) + \log \Gamma(\boldsymbol{\gamma}_{\hat{y}}^{(1)}) + (\boldsymbol{\gamma}_{\hat{y}}^{(1)} - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_{\hat{y}}))
+\end{equation}\]
+
+<p>We obtain the following figures for the decomposition and $\textrm{KL}_{\textrm{Pred}}$ criterion:</p>
+
+<p><img src="/images/visu_toy_klpred.png" alt="visu_toy_klpred" /></p>
+
+<h3 id="case-2-textrmkl_textrmpredfull">Case 2: $\textrm{KL}_{\textrm{PredFull}}$</h3>
+
+<p>We compute the full empirical vector as defined in the introductive part:</p>
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(2)} = \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}
+\end{equation*}\]
+
+<p>(Note that $\boldsymbol{\gamma}_{\hat{y}}^{(2)} = \boldsymbol{\gamma}_{\hat{y}}^{(1)}$.)</p>
+
+<p>In this case, there is no simplification as done previously. However, we can further decompose:</p>
+
+\[\begin{equation}
+\textrm{RCE}^{(2)} = \textrm{RCE}^{(1)}  + \Big (- \log \Gamma \big ( \sum_{c \neq \hat{y}} (\boldsymbol{\gamma}_c^{(2)}-1 \big ) + \sum_{c \neq \hat{y}} \big ( \log \Gamma(\boldsymbol{\gamma}_c^{(2)}) + (\boldsymbol{\gamma}_c^{(2)} - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_c) \big ) \Big )
+\end{equation}\]
+
+<p><img src="/images/visu_toy_klpredfull.png" alt="visu_toy_klpredfull" /></p>
+
+<h2 id="references">References</h2>
+
+<ol class="bibliography"><li><span id="malinin2018">A. Malinin, &amp; M. Gales. (2018). Predictive Uncertainty Estimation via Prior Networks. In <i>Advances in Neural Information Processing Systems</i>.</span></li>
+<li><span id="malinin2019">A. Malinin, &amp; M. Gales. (2019). Reverse KL-Divergence Training of Prior Networks: Improved Uncertainty and Adversarial Robustness. In <i>Advances in Neural Information Processing Systems</i>.</span></li>
+<li><span id="maximize-representation-gap2020">J. Nandy, W. Hsu, &amp; M.-L. Lee. (2020). Towards Maximizing the Representation Gap between In-Domain and Out-of-Distribution Examples. In <i>Advances in Neural Information Processing Systems</i>.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="https://chcorbi.github.io/tags/#dirichlet-networks" class="page__taxonomy-item" rel="tag">Dirichlet Networks</a>
+    
+    </span>
+  </p>
+
+
+
+
+      </footer>
+
+      
+
+<section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=https://chcorbi.github.io/posts/2020/10/klpred-decompo/" class="btn btn--twitter" title="Share on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https://chcorbi.github.io/posts/2020/10/klpred-decompo/" class="btn btn--facebook" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://chcorbi.github.io/posts/2020/10/klpred-decompo/" class="btn btn--linkedin" title="Share on LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+      
+
+
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="https://chcorbi.github.io/posts/2020/11/dirichlet-networks/" class="pagination--pager" title="A Survey on Dirichlet Neural Networks
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      
+        <h4 class="page__related-title">You May Also Enjoy</h4>
+      
+      <div class="grid__wrapper">
+        
+          
+
+
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="https://chcorbi.github.io/posts/2020/11/dirichlet-icml/" rel="permalink">Preparation on Dirichlet - ICML 2021
+</a>
+      
+    </h2>
+    
+    
+      <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+  
+	  13 minute read
+	
+</p>
+    
+
+        
+         <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Published:</strong> <time datetime="2020-11-26T00:00:00-08:00">November 26, 2020</time></p>
+        
+
+    
+    <p class="archive__item-excerpt" itemprop="description"><h2 id="table-of-contents">Table of contents</h2>
+<ol>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#contributions">Contributions</a></li>
+  <li><a href="#gaussian">Thought experiment with Gaussian distributions</a></li>
+  <li><a href="#experiments">Experiments</a></li>
+</ol>
+
+</p>
+    
+    
+    
+
+  </article>
+</div>
+
+        
+          
+
+
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="https://chcorbi.github.io/posts/2020/11/dirichlet-networks/" rel="permalink">A Survey on Dirichlet Neural Networks
+</a>
+      
+    </h2>
+    
+    
+      <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+  
+	  37 minute read
+	
+</p>
+    
+
+        
+         <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Published:</strong> <time datetime="2020-11-12T00:00:00-08:00">November 12, 2020</time></p>
+        
+
+    
+    <p class="archive__item-excerpt" itemprop="description"><p>In the past few years, a variety of Dirichlet-based methods for classification have emerged in the machine learning community. Before going into a detailed review of these approaches, we introduce the Dirichlet-multinomial model, a classic problem in machine learning which will help to better understand the intution behind the method.</p>
+
+</p>
+    
+    
+    
+
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+</div>
+
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+<a href="/sitemap/">Sitemap</a>
+<!-- end custom footer snippets -->
+
+        
+
+<div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="http://github.com/chcorbi"><i class="fab fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    <li><a href="https://chcorbi.github.io/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 Charles Corbière. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://github.com/academicpages/academicpages.github.io">AcademicPages</a>, a fork of <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    <script src="https://chcorbi.github.io/assets/js/main.min.js"></script>
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-147067893-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+  </body>
+</html>
+

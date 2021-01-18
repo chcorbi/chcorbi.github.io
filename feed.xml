@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="https://chcorbi.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://chcorbi.github.io/" rel="alternate" type="text/html" /><updated>2021-01-18T09:42:48-08:00</updated><id>https://chcorbi.github.io/feed.xml</id><title type="html">Charles Corbière’s page</title><subtitle>PhD Student at CNAM / valeo.ai</subtitle><author><name>Charles Corbière</name><email>charles.corbiere[at]valeo.com</email></author><entry><title type="html">Preparation on Dirichlet - ICML 2021</title><link href="https://chcorbi.github.io/posts/2020/11/dirichlet-icml/" rel="alternate" type="text/html" title="Preparation on Dirichlet - ICML 2021" /><published>2020-11-26T00:00:00-08:00</published><updated>2020-11-26T00:00:00-08:00</updated><id>https://chcorbi.github.io/posts/2020/11/dirichlet_icml</id><content type="html" xml:base="https://chcorbi.github.io/posts/2020/11/dirichlet-icml/">&lt;h2 id=&quot;table-of-contents&quot;&gt;Table of contents&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#context&quot;&gt;Context&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#contributions&quot;&gt;Contributions&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#gaussian&quot;&gt;Thought experiment with Gaussian distributions&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#experiments&quot;&gt;Experiments&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;context-&quot;&gt;Context &lt;a name=&quot;context&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Current metrics to measure in-domain and out-domain uncertainty include&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;maximum class probability \(MCP = \max_c p(y=c \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})\)&lt;/li&gt;
+  &lt;li&gt;predictive entropy \(\mathcal{H} \big [ p( y \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \big ]\)&lt;/li&gt;
+  &lt;li&gt;mutual information \(\mathcal{MI} \Big [y, \boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}} \Big ]\)&lt;/li&gt;
+  &lt;li&gt;differential entropy \(\mathcal{H} \big [ p( \boldsymbol{\pi} \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \big ]\)&lt;/li&gt;
+  &lt;li&gt;Dirichlet precision \(\alpha_0 = \sum_c \alpha_c\)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In many papers &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt;, they consider measures from the expected predictive categorical distribution \(p(y \vert \boldsymbol{x^*}, \mathcal{D})\) as a mesure of &lt;strong&gt;total uncertainty&lt;/strong&gt;. This includes MCP and predictive entropy.&lt;/p&gt;
+
+&lt;p&gt;Based on &lt;a class=&quot;citation&quot; href=&quot;#depeweg2018decomposition&quot;&gt;(Depeweg et al., 2018)&lt;/a&gt;, they decompose the predictive entropy into two terms :&lt;/p&gt;
+
+\[\begin{equation}
+\underbrace{\mathcal{H} \Big [ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big ]}_{\text{Total Uncertainty}} = \underbrace{\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \Big [ \mathcal{H} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big]}_{\text{Expected Aleatoric Uncertainty}} + \underbrace{\mathcal{MI} \Big [y, \boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}} \Big ]}_{\text{Epistemic Uncertainty}}
+\end{equation}\]
+
+&lt;p&gt;Consequently, mutual information is an epistemic uncertainty measure.&lt;/p&gt;
+
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;img src=&quot;/images/desired_behavior.png&quot; alt=&quot;desired_behavior&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Finally, Dirichlet precision is also expected to be an epistemic uncertainty measure as it measures the dispersion of the Dirichlet distribution on the simplex. The higher the epistemic uncertainty the higher we desire the dispersion to be.&lt;/p&gt;
+
+&lt;h2 id=&quot;contributions-&quot;&gt;Contributions &lt;a name=&quot;contributions&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;h3 id=&quot;summary&quot;&gt;Summary&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;A new total uncertainty measure for Dirichlet Networks, \(\textrm{KL}_{\textrm{Pred}}\), with properties similar to MCP&lt;/li&gt;
+  &lt;li&gt;\(\textrm{KL}_{\textrm{Pred}}\) can be decomposed into two terms which allow to distinguish aleatoric and epistemic uncertianty&lt;/li&gt;
+  &lt;li&gt;This new criterion enable to consider an improved version based on the &lt;em&gt;ground-truth&lt;/em&gt; class and which improves misclassification detection&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;a-new-total-uncertainty-measure&quot;&gt;A new total uncertainty measure&lt;/h3&gt;
+
+&lt;p&gt;In neural network trained to minimize cross-entropy, which is also equivalent to the KL-divergence between model distribution and empirical true distribution:&lt;/p&gt;
+
+\[\begin{equation}
+ \mathcal{L}_{\textrm{XE}}(\boldsymbol{x},y^*, \boldsymbol{\theta}) = \textrm{KL} \Big ( \hat{p}(y \vert \boldsymbol{x}) \vert \vert \textrm{Cat}(y \vert \boldsymbol{x}, \boldsymbol{\theta}) \Big ) = - \log p(y=y^* \vert \boldsymbol{x}, \boldsymbol{\theta})
+\end{equation}\]
+
+&lt;p&gt;The standard uncertainty measure is MCP, which is the estimated likelihood \(p(y=\hat{y} \vert \boldsymbol{x^*}, \hat{\boldsymbol{\theta}})\) at sample $\boldsymbol{x^*}$ by the model.&lt;/p&gt;
+
+&lt;p&gt;With Dirichlet Networks, training is achieved by minimizing the reverse KL-divergence with a sharp target Dirichlet distribution&lt;/p&gt;
+
+\[\begin{equation}
+ \mathcal{L}_{\textrm{RKL}}(\boldsymbol{x},y^*, \boldsymbol{\theta}) = \textrm{KL} \Big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(y^*)}) \Big ) 
+\end{equation}\]
+
+&lt;p&gt;In a similar way than for cross-entropy, we propose an uncertainty criterion, denoted $\textrm{KL}_{\textrm{Pred}}$, which measures the KL-divergence between NN’s output and a sharp Dirichlet distribution with concentration parameters $\boldsymbol{\gamma}_{\hat{y}}$ focused on the &lt;em&gt;predictive&lt;/em&gt; class $\hat{y}$:&lt;/p&gt;
+
+\[\begin{equation}
+    \textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \textrm{KL} \Big ( \textrm{Dir} (\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\hat{\theta}} ) ~\vert \vert~ \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\gamma}^{(\hat{y})} \big ) \Big )
+\end{equation}\]
+
+&lt;p&gt;To ensure an accurate estimation of concentration parameters $\boldsymbol{\gamma}^{(\hat{y})}$, we compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$:&lt;/p&gt;
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(\hat{y})} = \frac{1}{N^{(\hat{y})}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f(\boldsymbol{x}_i,\boldsymbol{\hat{\theta}}))
+\end{equation*}\]
+
+&lt;p&gt;where $N^{(\hat{y})}$ is the number of training samples with label $\hat{y}$.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/klpred_behavior.png&quot; alt=&quot;simplex_behavior&quot; height=&quot;700px&quot; width=&quot;700px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The lower $\textrm{KL}_{\textrm{Pred}}$ is, the more certain we are in the prediction. Previous figure illustrates the fact that correct predictions will have Dirichlet distributions similar to the computed mean distribution for the predicted class, and thus associated with a low uncertainty measure. Misclassified predictions are expected to present different concentration parameters than the average computed on training set resulting in a higher $\textrm{KL}_{\textrm{Pred}}$ measure.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;For now, this is just another measure, we don’t have any theoretical explanation whether it is a better to evaluate total uncertainty. Without further justification, it might be as good as MCP or predictive entropy.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;decomposition-of-textrmkl_textrmpred&quot;&gt;Decomposition of \(\textrm{KL}_{\textrm{Pred}}\)&lt;/h3&gt;
+
+&lt;p&gt;Such as done for the reverse KL-divergence loss in &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019)&lt;/a&gt;, we decompose \(\textrm{KL}_{\textrm{Pred}}\) into the reverse cross-entropy and the negative differential entropy:&lt;/p&gt;
+
+\[\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \underbrace{\mathbb{E}_{p \big ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\hat{\theta}} ) \big )} \Big [- \log \textrm{Dir} \big ( \boldsymbol{\pi}  \vert \boldsymbol{\gamma}_{(\hat{y})} \big ) \Big ]}_\text{Reverse Cross-Entropy} - \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}\]
+
+&lt;p&gt;where we can show that the Reverse Cross-Entropy (RCE) correspond to measuring aleatoric uncertainty and the Differential Entropy measures the dispersion of the Dirichlet distribution, hence epistemic uncertainty.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Still, no justification if it is better than the previous proposed decomposition of predictive entropy in &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt;.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;improving-misclassification-detection-for-dirichlet-networks&quot;&gt;Improving misclassification detection for Dirichlet Networks&lt;/h3&gt;
+
+&lt;p&gt;Similarly to ConfidNet, we can improve the evaluation of misclassification detection by considering measure in respect to the &lt;em&gt;ground-truth&lt;/em&gt; class.&lt;/p&gt;
+
+\[\begin{equation}
+    \textrm{KL}_{\textrm{True}}(\boldsymbol{x}) = \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{y^*} \big ) \Big )
+\end{equation}\]
+
+&lt;p&gt;where \(\boldsymbol{\gamma}_{y^*}\) corresponds to a Dirichlet distribution whose concentration parameters are the empirical mean of the &lt;em&gt;true&lt;/em&gt; class \(y^*\)  of sample \(\boldsymbol{x}\). When evaluated in experiments, \(\textrm{KL}_{\textrm{True}}\) criterion leads to a near-perfect separation of correct and erroneous predictions.&lt;/p&gt;
+
+&lt;p&gt;However, the true class of an output is obviously not available when estimating confidence on test samples. We propose to learn \(\textrm{KL}_{\textrm{True}}\) by introducing an auxiliary confidence neural network, termed &lt;em&gt;KLNet&lt;/em&gt;, with parameters \(\boldsymbol{\omega}\), which outputs a confidence prediction \(\hat{c}(\boldsymbol{x}, \boldsymbol{\omega})\).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Now we can justify than &lt;em&gt;KLNet&lt;/em&gt; improves total uncertainty by better evaluating aleatoric uncertainty. Nevertheless, we have no guarantees about epistemic uncertainty. Plus, current KLNet training doesn’t take into account OOD samples.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;thought-experiment-with-gaussian-distributions-&quot;&gt;Thought experiment with Gaussian distributions &lt;a name=&quot;gaussian&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Let’s suppose the random variable over categorical probabilities $\boldsymbol{\pi} =[\pi_1,…,\pi_C]$ is now parametrize as a $K$-multivariate Gaussian distribution:&lt;/p&gt;
+
+\[\begin{equation}
+	p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) = \mathcal{N}(\boldsymbol{\pi} \vert \boldsymbol{\mu_1}, \boldsymbol{\Sigma_1})
+\end{equation}\]
+
+&lt;p&gt;For instance, an output of a neural network could be $\boldsymbol{\mu_1} = [0.98, 0.01, .01]$ and $\boldsymbol{\Sigma_1}$ = [0.05, 0.03, 0.02].&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;On a related matter, &lt;a class=&quot;citation&quot; href=&quot;#kendall2017&quot;&gt;(Kendall &amp;amp; Gal, 2017)&lt;/a&gt; propose in classification to consider a Gaussian over $\boldsymbol{\pi} \vert \boldsymbol{w}$ and parametrized by a NN outputing logits $f(\boldsymbol{x}, \boldsymbol{w})$ (e.g  $[98.1, 1.2, 1.3]$) and a scalar $\boldsymbol{\sigma}$ (e.g $[2.1,0.6,3.3]$). Mean probabilities corresponds to the softmax of the mean corrupted by Gaussian noise:&lt;/p&gt;
+
+\[\begin{equation}
+	\boldsymbol{\hat{\pi}}_t = \mathrm{Softmax}(\boldsymbol{\pi}_t)~~~~\mathrm{with }~ \boldsymbol{\pi}_t = f(\boldsymbol{x}, \boldsymbol{w}) +\boldsymbol{\sigma}\epsilon_t,~~~\epsilon_t \sim \mathcal{N}(0,I)
+\end{equation}\]
+&lt;/blockquote&gt;
+
+&lt;p&gt;On the simplex, the distribution can be represented with $\boldsymbol{\mu_1}$ as its center position and dispersion corresponds to $\boldsymbol{\Sigma_1}$.
+Predictions are based on the argmax of the mean parameter, which is the first moment of the distribution:&lt;/p&gt;
+
+\[\begin{equation}
+\hat{y} = arg\,max_{c}~ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})}[y] = arg\,max_{c}~ \boldsymbol{\mu_1}
+\end{equation}\]
+
+&lt;p&gt;In this case, &lt;strong&gt;the entropy corresponds to computing the entropy on the mean of the distribution&lt;/strong&gt;: $\mathcal{H} \big [ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})}[y] \big ]$.&lt;/p&gt;
+
+&lt;p&gt;To reflect epistemic uncertainty, we should also consider the second moment of the distribution $\boldsymbol{\Sigma_1}$. For instance, the higher $\boldsymbol{\Sigma_1}[\hat{y}]$ is, the higher would be the epistemic uncertainty.&lt;/p&gt;
+
+&lt;p&gt;In order to consider both aleatoric and epistemic uncertainty, we could try to derive some statistics on $p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})$. Given a target distribution $p(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2}) = \mathcal{N}(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2})$ also Gaussian, the &lt;strong&gt;KL-divergence&lt;/strong&gt; between the two distributions is:&lt;/p&gt;
+
+\[\begin{align}
+\mathrm{KL} \big [ p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) \vert \vert p(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2})] = \frac{1}{2} \Big (\log \vert\boldsymbol{\Sigma_2}\vert - &amp;amp;\log \vert\boldsymbol{\Sigma_1}\vert - K + tr( \boldsymbol{\Sigma_2}^{-1} \boldsymbol{\Sigma_1}) \\ \nonumber
+ &amp;amp;+ (\boldsymbol{\mu_2} - \boldsymbol{\mu_1})\boldsymbol{\Sigma_2}^{-1}(\boldsymbol{\mu_2}-\boldsymbol{\mu_1}) \Big ) 
+\end{align}\]
+
+&lt;p&gt;Setting aside the terms which do not depend on the input, we can identity two term. The first one relates to the first moment of the distribution, $(\boldsymbol{\mu_2}-\boldsymbol{\mu_1})\boldsymbol{\Sigma_2}^{-1}(\boldsymbol{\mu_2}-\boldsymbol{\mu_1})$ and the second one involves only the variance $- \log \vert\boldsymbol{\Sigma_1}\vert + tr( \boldsymbol{\Sigma_2}^{-1} \boldsymbol{\Sigma_1})$.&lt;/p&gt;
+
+&lt;h2 id=&quot;empirical-experiments-&quot;&gt;Empirical Experiments &lt;a name=&quot;experiments&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Two models were trained:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;with standard cross-entropy (&lt;strong&gt;XE&lt;/strong&gt;)&lt;/li&gt;
+  &lt;li&gt;with contrastive reverse KL-divergence (&lt;strong&gt;Dirichlet&lt;/strong&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;cifar-10&quot;&gt;CIFAR-10&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In-distribution dataset: CIFAR-10&lt;/li&gt;
+  &lt;li&gt;Out-distribution training dataset: CIFAR-100&lt;/li&gt;
+  &lt;li&gt;Network Architecture: VGG-16&lt;/li&gt;
+  &lt;li&gt;Concentrations parameters $\alpha= \exp{f(x, \theta)}$&lt;/li&gt;
+  &lt;li&gt;Target concentrations for in-domain: \(\beta_{\text{in}}\) = 10&lt;/li&gt;
+  &lt;li&gt;Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Accuracy is 93.5% for XE model and 92.9% for Dirichlet model.&lt;/p&gt;
+
+&lt;p&gt;Presented results are for &lt;strong&gt;TinyImageNet&lt;/strong&gt; as OOD dataset (% AUC), $\beta=100$ for standard Dirichlet models and $\beta=10$ for contrastive Dirichlet models&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Training&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis.+OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Standard-XE&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;MCP&lt;br /&gt;ODIN&lt;br /&gt;Mahalanobis&lt;br /&gt;ConfidNet&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.6\%$&lt;br /&gt;$91.4\%$&lt;br /&gt;$88.9\%$&lt;br /&gt;$\boldsymbol{92.6\%}$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$87.5\%$&lt;br /&gt;$\boldsymbol{89.1\%}$&lt;br /&gt;$83.0\%$&lt;br /&gt;$87.8\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$90.5\%$&lt;br /&gt;$\boldsymbol{91.5\%}$&lt;br /&gt;$85.7\%$&lt;br /&gt;$91.6\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Standard-Dirichlet&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;MCP&lt;br /&gt;ODIN&lt;br /&gt;Mahalanobis&lt;br /&gt;Mutual Information&lt;br /&gt;ConfidNet&lt;br /&gt;$\textrm{KL}_{\textrm{Pred}}$ (Ours) &lt;br /&gt;&lt;strong&gt;KLNet (Ours)&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$82.0\%$&lt;br /&gt;$81.1\%$&lt;br /&gt;$\boldsymbol{91.9\%}$&lt;br /&gt;$74.0\%$&lt;br /&gt;$.\%$&lt;br /&gt;$91.4\%$&lt;br /&gt;$91.3\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$72.3\%$&lt;br /&gt;$71.5\%$&lt;br /&gt;$\boldsymbol{86.9\%}$&lt;br /&gt;$66.0\%$&lt;br /&gt;$.\%$&lt;br /&gt;$84.3\%$&lt;br /&gt;$84.1\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$74.8\%$&lt;br /&gt;$73.9\%$&lt;br /&gt;$\boldsymbol{89.6\%}$&lt;br /&gt;$67.8\%$&lt;br /&gt;$.\%$&lt;br /&gt;$87.5\%$&lt;br /&gt;$87.4\%$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Training&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis.+OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Contrastive-XE&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;MCP&lt;br /&gt;ODIN&lt;br /&gt;ConfidNet&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.5\%$&lt;br /&gt;$92.0\%$&lt;br /&gt;$92.7\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$\boldsymbol{94.0\%}$&lt;br /&gt;$94.1\%$&lt;br /&gt;$94.1\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$\boldsymbol{95.4\%}$&lt;br /&gt;$95.4\%$&lt;br /&gt;$95.5\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Contrastive-Dirichlet&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;MCP&lt;br /&gt;ODIN&lt;br /&gt;Mutual Information&lt;br /&gt;Mahalanobis&lt;br /&gt;ConfidNet&lt;br /&gt;$\textrm{KL}_{\textrm{Pred}}$ (Ours) &lt;br /&gt;&lt;strong&gt;KLNet (Ours)&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.1\%$&lt;br /&gt;$92.1\%$&lt;br /&gt;$91.9\%$&lt;br /&gt;$91.4\%$&lt;br /&gt;$92.8\%$&lt;br /&gt;$92.1\%$&lt;br /&gt;$\boldsymbol{93.2\%}$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.2\%$&lt;br /&gt;$93.2\%$&lt;br /&gt;$93.2\%$&lt;br /&gt;$83.3\%$&lt;br /&gt;$93.6\%$&lt;br /&gt;$93.2\%$&lt;br /&gt;$\boldsymbol{93.6\%}$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$94.9\%$&lt;br /&gt;$94.9\%$&lt;br /&gt;$94.8\%$&lt;br /&gt;$95.1\%$&lt;br /&gt;$95.2\%$&lt;br /&gt;$94.9\%$&lt;br /&gt;$\boldsymbol{95.3\%}$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h5 id=&quot;effect-of-the-computed-mean-gammahaty&quot;&gt;Effect of the computed mean \(\gamma^{(\hat{y})}\)&lt;/h5&gt;
+
+&lt;p&gt;We have three cases about how to compute the target distribution in the criterion  $\textrm{KL}_{\textrm{Pred}}$&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;KL_Original&lt;/strong&gt;: Take exactly the target distribution use in training:&lt;/li&gt;
+&lt;/ul&gt;
+
+\[\begin{equation*}
+ \gamma^{(0, \hat{y})} = \big [ 1,..., \beta_{\text{in}},...,1 \big ]
+\end{equation*}\]
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;KL_Full&lt;/strong&gt;: Compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$ and use &lt;strong&gt;all values&lt;/strong&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(1, \hat{y})} = \frac{1}{N^{(\hat{y})}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f(\boldsymbol{x}_i,\boldsymbol{\hat{\theta}}))
+\end{equation*}\]
+
+&lt;p&gt;where $N^{(\hat{y})}$ is the number of training samples with label $\hat{y}$.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;KL_Pred&lt;/strong&gt;: Compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$ and use &lt;strong&gt;only the $\hat{y}$-value&lt;/strong&gt;:&lt;/li&gt;
+&lt;/ul&gt;
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(2, \hat{y})} = \big [ 1,..., \boldsymbol{\gamma}^{(1, \hat{y})}[\hat{y}],...,1 \big ]
+\end{equation*}\]
+
+&lt;p&gt;Results using the Dirichlet model trained with \(\beta_{\text{in}}=10\) are available in the table below:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis.+OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KL_Original&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.6\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.0\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.7\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KL_Pred&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.5\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.2\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.8\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KL_Full&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.2\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.2\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.6\%$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Actually, I observe that using more complicated form of target distribution do not impact performance.&lt;/p&gt;
+
+&lt;h5 id=&quot;effect-of-beta_textin&quot;&gt;Effect of \(\beta_{\text{in}}\)&lt;/h5&gt;
+
+&lt;p&gt;We vary the chosen value for in-domain target concentrations \(\beta_{\text{in}}\) from 10 to 10,000. Below are the results for the criterion KL_Original:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;\(\beta_{\text{in}}\)&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Accuracy&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis.+OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;10&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.9\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.6\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.0\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.7\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;100&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.0\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$91.7\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.2\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.8\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;1000&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.5\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$90.2\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$90.3\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$91.1\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;10000&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.6\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$88.5\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$88.1\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$89.3\%$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;We also note that the lower \(\beta_{\text{in}}\) is, the less confident in-domain softmax probabilities will be. For instance, in the case of \(\beta_{\text{in}}=10\), they range from $0.1$ to $0.57$.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;When \(\beta_{\text{in}} \geq 100\), KL_Original becomes worse compared to KL_Pred or KL_Full. This may be due to the fact that logits variation are important, making them deviate from the original target distribution.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;empirical-evaluation-of-the-decomposed-measures&quot;&gt;Empirical evaluation of the decomposed measures&lt;/h5&gt;
+
+&lt;p&gt;The criterion $\textrm{KL}_{\textrm{Pred}}$ actually correspond to the negative reverse KL-divergence used in training. Hence, it can be decomposed into the reverse cross-entropy and the differential entropy:&lt;/p&gt;
+
+\[\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = - \underbrace{\mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{\hat{y}} \big ) \Big ]}_\text{Reverse Cross-Entropy} + \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}\]
+
+&lt;p&gt;In the synthetic experiment, we observe that the differential entropy correlates with the &lt;strong&gt;epistemic uncertainty&lt;/strong&gt; and the reverse cross-entropy (RCE) correlates with the &lt;strong&gt;aleatoric uncertainty&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;We use those decomposed metric here to evaluate their effectiveness on misclassification detection and OOD detection in the following table.
+(Experiment done using the Dirichlet model trained with \(\beta_{\text{in}}=10\))&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;RCE&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$91.3\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.8\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;Diff. Ent.&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$91.2\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.8\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KL_Original&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.6\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.0\%$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;It doesn’t seem RCE or differential entropy are more inclined to measure one type of uncertainty. Only thing we can conlude is that combine them into KL_Original improves performances.&lt;/p&gt;
+
+&lt;h5 id=&quot;ablation-study&quot;&gt;Ablation study&lt;/h5&gt;
+
+&lt;p&gt;As observed in our Neurips submission, KLNet mainly improves misclassification detection, with a slight but uncontrolled benefit on OOD detection:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis.+OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KL_Original&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$92.6\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.0\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.7\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KLNet_Classic&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.0\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.3\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$94.0\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;KLNet_Cloning&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.7\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$93.3\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$94.5\%$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&quot;cifar-100&quot;&gt;CIFAR-100&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In-distribution dataset: CIFAR-100&lt;/li&gt;
+  &lt;li&gt;Out-distribution training dataset: CIFAR-10&lt;/li&gt;
+  &lt;li&gt;Network Architecture: VGG-16&lt;/li&gt;
+  &lt;li&gt;Concentrations parameters $\alpha= \exp{f(x, \theta)}$&lt;/li&gt;
+  &lt;li&gt;Target concentrations for in-domain: \(\beta_{\text{in}}\) = 10&lt;/li&gt;
+  &lt;li&gt;Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Accuracy is 73.2% for XE model and 71.5% for Dirichlet model.&lt;/p&gt;
+
+&lt;p&gt;Presented results are for &lt;strong&gt;TinyImageNet&lt;/strong&gt; as OOD dataset (% AUC)&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Training&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis. Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;OOD Detection&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Mis.+OOD Detection&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;XE&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;MCP&lt;br /&gt;ODIN&lt;br /&gt;Mahalanobis&lt;br /&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$86.6\%$&lt;br /&gt;$84.9\%$&lt;br /&gt;$80.9\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$75.9\%$&lt;br /&gt;$77.4\%$&lt;br /&gt;$73.3\%$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$86.0\%$&lt;br /&gt;$85.4\%$&lt;br /&gt;$81.3\%$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;Dirichlet&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;MCP&lt;br /&gt;ODIN&lt;br /&gt;Mutual Information&lt;br /&gt;Mahalanobis&lt;br /&gt;&lt;strong&gt;KL_Original&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;KLNet&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;KLNet_Cloning&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$83.7\%$&lt;br /&gt;$83.7\%$&lt;br /&gt;$82.8\%$&lt;br /&gt;$83.4\%$&lt;br /&gt;$87.3\%$&lt;br /&gt;$86.8\%$&lt;br /&gt;$\boldsymbol{87.6\%}$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$76.0\%$&lt;br /&gt;$76.0\%$&lt;br /&gt;$76.0\%$&lt;br /&gt;$71.9\%$&lt;br /&gt;$77.0\%$&lt;br /&gt;$76.9\%$&lt;br /&gt;$\boldsymbol{77.8\%}$&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$84.3\%$&lt;br /&gt;$84.3\%$&lt;br /&gt;$83.8\%$&lt;br /&gt;$82.9\%$&lt;br /&gt;$87.3\%$&lt;br /&gt;$86.8\%$&lt;br /&gt;$\boldsymbol{87.8\%}$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Training details&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;on CIFAR-10, KLNet training without weight decay, then add it on second cloning phase and disable data augmentation&lt;/li&gt;
+    &lt;li&gt;same for ConfidNet on CIFAR-10&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol class=&quot;bibliography&quot;&gt;&lt;li&gt;&lt;span id=&quot;malinin2018&quot;&gt;A. Malinin, &amp;amp; M. Gales. (2018). Predictive Uncertainty Estimation via Prior Networks. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;depeweg2018decomposition&quot;&gt;S. Depeweg, J. M. Hernández-Lobato, F. Doshi-Velez, &amp;amp; S. Udluft. (2018). Decomposition of Uncertainty in Bayesian Deep Learning for Efficient and Risk-sensitive Learning. In &lt;i&gt;Proceedings of the International Conference on Machine Learning&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;malinin2019&quot;&gt;A. Malinin, &amp;amp; M. Gales. (2019). Reverse KL-Divergence Training of Prior Networks: Improved Uncertainty and Adversarial Robustness. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;kendall2017&quot;&gt;A. Kendall, &amp;amp; Y. Gal. (2017). What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision? &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;&lt;/ol&gt;</content><author><name>Charles Corbière</name><email>charles.corbiere[at]valeo.com</email></author><category term="Dirichlet Networks" /><summary type="html">Table of contents Context Contributions Thought experiment with Gaussian distributions Experiments</summary></entry><entry><title type="html">A Survey on Dirichlet Neural Networks</title><link href="https://chcorbi.github.io/posts/2020/11/dirichlet-networks/" rel="alternate" type="text/html" title="A Survey on Dirichlet Neural Networks" /><published>2020-11-12T00:00:00-08:00</published><updated>2020-11-12T00:00:00-08:00</updated><id>https://chcorbi.github.io/posts/2020/11/dirichlet_networks</id><content type="html" xml:base="https://chcorbi.github.io/posts/2020/11/dirichlet-networks/">&lt;p&gt;In the past few years, a variety of Dirichlet-based methods for classification have emerged in the machine learning community. Before going into a detailed review of these approaches, we introduce the Dirichlet-multinomial model, a classic problem in machine learning which will help to better understand the intution behind the method.&lt;/p&gt;
+
+&lt;h2 id=&quot;table-of-contents&quot;&gt;Table of contents&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#preliminaries&quot;&gt;Preliminaries: the Dirichlet-multinomial Model&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#bayesian-approach&quot;&gt;Dirichlet Neural Networks, a Bayesian Approach&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#prior-networks&quot;&gt;Prior Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#max-gap&quot;&gt;Maximizing the Gap between In- and Out-distribution for Prior Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#evidential-networks&quot;&gt;Evidential Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#generative-evidential&quot;&gt;Generative Evidential Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#variational-inference&quot;&gt;Variational Inference for Dirichlet Networks&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#posterior-networks&quot;&gt;Posterior Networks, a Density-based Approach&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#summary&quot;&gt;Summary and Discussion&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;preliminaries-the-dirichlet-multinomial-model-&quot;&gt;Preliminaries: the Dirichlet-multinomial Model &lt;a name=&quot;preliminaries&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Let us take the problem of infering the probability that a dice with $C$ sides comes up as face $c$.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;This example is heavily inspired by Section 3.4 of &lt;a class=&quot;citation&quot; href=&quot;#murphy2013machine&quot;&gt;(Murphy, 2013)&lt;/a&gt;’s book.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Suppose we observe $N$ dice rolls. As we always roll the same dice, our training dataset consists of \(\mathcal{D} = \{(x, y^{(i)})\}_{i=1}^N\) where \(y^{(i)} \in \{1,...,C\}\). If we assume data is &lt;em&gt;i.i.d&lt;/em&gt;, the likelihood has the form:&lt;/p&gt;
+
+\[\begin{equation}
+p(\mathcal{D} \vert \boldsymbol{\pi}) = \mathrm{Cat}(\mathcal{D} \vert \boldsymbol{\pi}) =  \prod_{c=1}^C \pi_c^{N_c}
+\label{eq:likelihood_multinomial}
+\end{equation}\]
+
+&lt;p&gt;where \(N_c = \sum_{i=1}^N \mathbb{I}(y^{(i)} = c)\) is the number of observations of class $c$ among the $N$ dice rolls (sufficient statistics).&lt;/p&gt;
+
+&lt;p&gt;For its conjugate properties with categorical distributions, we chose to model the prior as a Dirichlet distribution with concentration parameters $\boldsymbol{\beta}$:&lt;/p&gt;
+
+\[\begin{equation}
+p(\boldsymbol{\pi}) = \mathrm{Dir} \big (\boldsymbol{\pi} ; \boldsymbol{\beta} \big ) =  \frac{\Gamma(\beta_0)}{\prod_{c=1}^C \Gamma(\beta_c)} \prod_{c=1}^C \pi_c^{\beta_c- 1}
+\end{equation}\]
+
+&lt;p&gt;Multiplying the likelihood by the prior, we find that the posterior is also a Dirichlet distribution:&lt;/p&gt;
+
+\[\begin{align}
+p(\boldsymbol{\pi} \vert \mathcal{D}) &amp;amp;\propto p(\mathcal{D} \vert \boldsymbol{\pi}) p(\boldsymbol{\pi}) \\
+    &amp;amp;\propto \prod_{c=1}^C \pi_c^{N_c} \pi_c^{\beta_c - 1} \\
+    &amp;amp;= \mathrm{Dir} \big (\boldsymbol{\pi} \vert \beta_1 + N_1,..., \beta_C + N_C \big )
+\end{align}\]
+
+&lt;p&gt;Now, what we really care about is to compute the posterior predictive distribution for a single multinouilli trial:&lt;/p&gt;
+
+\[\begin{align}
+P(y=c \vert \mathcal{D}) &amp;amp;= \int P(y=c \vert \boldsymbol{\pi}) p(\boldsymbol{\pi} \vert \mathcal{D}) d\boldsymbol{\pi} \\
+    &amp;amp;= \int \pi_c \cdot p(\boldsymbol{\pi} \vert \mathcal{D}) d\boldsymbol{\pi} \\
+    &amp;amp;= \mathbb{E}_{p(\boldsymbol{\pi} \vert \mathcal{D})} \big [\pi_c] = \frac{\beta_c + N_c}{\beta_0 + N}
+\end{align}\]
+
+&lt;p&gt;We observe that the prior distribution acts as a &lt;strong&gt;Bayesian smoothing&lt;/strong&gt; by adding pseudo-count $\boldsymbol{\beta}$ to the true count.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Consider $A,B$ two random variables with respective realisations $a,b$. In this blog post, we use the abusive notation \(\mathbb{E}_{p(a \vert b)} \big [ f(a) \big ] = \int f(a) p(A=a \vert B=b) da~\) instead of \(~\mathbb{E} \big [f(a) \vert B=b \big ]\) for conciseness.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;dirichlet-neural-networks-a-bayesian-approach--&quot;&gt;Dirichlet Neural Networks, a Bayesian Approach  &lt;a name=&quot;bayesian-approach&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;We extend the Bayesian treatment of a single categorical distribution to classification. In classification tasks, we predict the class label $y_i$ from a different categorical distribution for each input $\boldsymbol{x}_i$. Dataset consists of a collection of &lt;em&gt;i.i.d&lt;/em&gt; training samples \(\mathcal{D} = \{(\boldsymbol{x}^{(i)}, y^{(i)})\}_{i=1}^N \in (\mathcal{X} \times \mathcal{Y})^N\) where $\mathcal{X}$ represents the input space and \(\mathcal{Y}=\{1,\ldots,C\}\) is a set of class labels. Samples drawn from $\mathcal{D}$ follow an unknown joint probability distribution $p(\boldsymbol{x}, y)$ where $\boldsymbol{x}$ and $y$ are random variables over input space and label space respectively.&lt;/p&gt;
+
+&lt;p&gt;Let us denote $\boldsymbol{\pi} =[\pi_1,…,\pi_C]$ the random variable over categorical probabilities. The likelihood given a sample $\boldsymbol{x}$ has the form:&lt;/p&gt;
+
+\[\begin{equation}
+y \vert \boldsymbol{\pi}, \boldsymbol{x} \sim \mathrm{Cat}(y \vert \boldsymbol{\pi}, \boldsymbol{x}) =  \prod_{c=1}^C \pi_c^{\tilde{N}_c(\boldsymbol{x})}
+\end{equation}\]
+
+&lt;p&gt;The difference with Eq.(\ref{eq:likelihood_multinomial}) is that \(\tilde{N}_c(\boldsymbol{x})\) now represents a label frequency count at point \(\boldsymbol{x}\).&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Most of the time, the estimator \(\tilde{N}_c(\boldsymbol{x})\) uses single or very few samples since most of the inputs are unique or very rare in the training set.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Obviously, for an unknown test sample \(\boldsymbol{x}^*\), we don’t have access to its label frequency count when infering. Consequently, we are not able to estimate the posterior predictive distribution:&lt;/p&gt;
+
+\[\begin{align}
+P(y =c \vert \boldsymbol{x^*}, \mathcal{D}) &amp;amp;= \int P(y=c \vert \boldsymbol{\pi}, \boldsymbol{x^*}) p(\boldsymbol{\pi} \vert \boldsymbol{x}^*, \mathcal{D}) d\boldsymbol{\pi} \\
+    &amp;amp;= \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x}^*, \mathcal{D})} \big [ \pi_c \big ]
+\end{align}\]
+
+&lt;p&gt;Approaches like ensembles &lt;a class=&quot;citation&quot; href=&quot;#deepensembles2017&quot;&gt;(Lakshminarayanan et al., 2017)&lt;/a&gt; and dropout &lt;a class=&quot;citation&quot; href=&quot;#mcdropout2016&quot;&gt;(Gal &amp;amp; Ghahramani, 2016)&lt;/a&gt; model implicity the posterior distribution over categorical probabilities  by marginalizing over the network parameters $\boldsymbol{\theta}$ and estimate the predictive distribution thanks to Monte-Carlo Sampling:&lt;/p&gt;
+
+\[\begin{equation*}
+ P(y=c \vert \boldsymbol{x}^*, \mathcal{D}) = \int P(y=c \vert \boldsymbol{x}^*, \boldsymbol{\theta}) p(\boldsymbol{\theta} \vert \mathcal{D}) d\boldsymbol{\theta} \approx \frac{1}{S} \sum_{s=1}^S P(y=c \vert \boldsymbol{x}^*, \boldsymbol{\theta}_s)
+\end{equation*}\]
+
+&lt;p&gt;&lt;strong&gt;With Dirichlet models, we now explicitly parametrizes the distribution over the predictive categorical $p(\boldsymbol{\pi} \vert \boldsymbol{x}^*, \mathcal{D})$ with a Dirichlet distribution.&lt;/strong&gt; This effectively emulate an ensemble without sampling approximation, thanks a closed-form solution which also requires one forward pass only.&lt;/p&gt;
+
+&lt;p&gt;In particular, Dirichlet modelisation enables to distinctly account for the aleatoric uncertainty and the epistemic uncertainty of a prediction. The &lt;em&gt;aleatoric uncertainty&lt;/em&gt; is irreducible from the data due to class overlap or noise, &lt;em&gt;e.g.&lt;/em&gt; a fair coin has 50/50 chance for head. The &lt;em&gt;epistemic uncertainty&lt;/em&gt; is due to the lack of knowledge about unseen data, &lt;em&gt;e.g.&lt;/em&gt; an image of an unknown object or an outlier in the data.&lt;/p&gt;
+
+&lt;p&gt;Epistemic uncertainty relates to the spread of the categorical distribution \(p(\boldsymbol{\pi} \vert \boldsymbol{x}^*, \mathcal{D})\) on the simplex, which corresponds to \(\alpha_0 = \sum_{c=1}^C \alpha_c\) for a Dirichlet distribution. Aleatoric uncertainty is linked to the position of the mean on the simplex. Equipped with this configuration, we would like Dirichlet network to yield the desired behaviors shown in the figure below:&lt;/p&gt;
+
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;img src=&quot;/images/desired_behavior.png&quot; alt=&quot;desired_behavior&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;When the model is confident in its prediction, it should yield a sharp distribution centered on one of the corners of the simplex (&lt;em&gt;Fig a.&lt;/em&gt;). For an input in a region with high degrees of noise or class overlap (aleatoric uncertainty), it should yield a sharp distribution focused on the center of the simplex, which corresponds to being confident in predicting a flat categorical distribution over class labels (&lt;em&gt;Fig b.&lt;/em&gt;). Finally, for out-of-distribution inputs, the Dirichlet network should yield a flat distribution over the simplex, indicating large epistemic uncertainty (&lt;em&gt;Fig c.&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;Now the remaining questions are:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;How to induce such desired behavior when training Dirichlet networks?&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;What measure should we use for each type of uncertainty?&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the recent literature,  &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt; and &lt;a class=&quot;citation&quot; href=&quot;#sensoy2018&quot;&gt;(Sensoy et al., 2018)&lt;/a&gt; simultaneously proposed to learn a Dirichlet neural network to better represent uncertainty in classification. Following papers &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019; Chen et al., 2019; Sensoy et al., 2020; Joo et al., 2020; Nandy et al., 2020; Charpentier et al., 2020)&lt;/a&gt; build on this framework by improving learning. In the rest of this post, we will review these approaches and their benefits.&lt;/p&gt;
+
+&lt;h2 id=&quot;prior-networks-&quot;&gt;Prior Networks &lt;a name=&quot;prior-networks&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt; propose to model the concentration parameters $\boldsymbol{\alpha}$ of the distribution over probabilities $p(\boldsymbol{\pi} \vert \boldsymbol{x}^*; \boldsymbol{\boldsymbol{\hat{\theta}}}) = \mathrm{Dir} \big (\boldsymbol{\pi} \vert \boldsymbol{\alpha} \big )$ where the concentration parameters $\boldsymbol{\alpha}$ are computed by the output of a neural network $f$.&lt;/p&gt;
+
+&lt;p&gt;By marginalizing network parameters $\boldsymbol{\theta}$, the distribution over probabilities writes as follow:&lt;/p&gt;
+
+\[\begin{equation*}
+ p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) = \int p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \boldsymbol{\theta}) p(\boldsymbol{\theta} \vert \mathcal{D}) d\boldsymbol{\theta}
+\end{equation*}\]
+
+&lt;p&gt;For simplicity, authors assume a Dirac-delta approximation of the parameters&lt;/p&gt;
+
+\[\begin{equation*}
+ p(\boldsymbol{\theta} \vert \mathcal{D}) = \delta(\boldsymbol{\theta} - \boldsymbol{\hat{\theta}}) \Rightarrow p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) \approx p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \boldsymbol{\hat{\theta}})
+\end{equation*}\]
+
+&lt;p&gt;The posterior over class labels will be given by the mean of the Dirichlet:&lt;/p&gt;
+
+\[\begin{equation}
+P(y=c \vert \boldsymbol{x}^*, \mathcal{D}) = \int P(y=c \vert \boldsymbol{\pi}, \boldsymbol{x^*}) p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \boldsymbol{\hat{\theta}}) = \frac{\alpha_c}{\alpha_0}
+\end{equation}\]
+
+&lt;p&gt;If an exponential output function is used, i.e $\alpha_c = e^{f_c(\boldsymbol{x^*}, \boldsymbol{\hat{\theta}})}$, then the expected posterior probability of a label $c$ is given by the output of the softmax:&lt;/p&gt;
+
+\[\begin{equation}
+P(y=c \vert \boldsymbol{x^*}, \mathcal{D}) = \frac{e^{f_c(\boldsymbol{x^*}, \boldsymbol{\hat{\theta}})}}{\sum_{k=1}^C e^{f_k(\boldsymbol{x^*}; \boldsymbol{\hat{\theta}})}}
+\end{equation}\]
+
+&lt;p&gt;The representation is similar to standard neural networks for classification with the difference that the output now describes the concentration parameters of a Dirichlet distribution over a simplex.&lt;/p&gt;
+
+&lt;h3 id=&quot;learning&quot;&gt;Learning&lt;/h3&gt;
+&lt;p&gt;Merely training with a cross-entropy loss only affects the value of the concentration parameters $\alpha_y$ associated to the true class. It does not enable to control the &lt;em&gt;spread&lt;/em&gt;
+parameter $\alpha_0$ of the Dirichlet distribution over categorical probabilities.&lt;/p&gt;
+
+&lt;p&gt;For clarity, we introduce the existence of out-of-domain training data \(\mathcal{D}_{\textrm{out}}\) and now denotes the training dataset by \(\mathcal{D}_{\textrm{in}}\). Associated random variable specifying whether a sample belong to in-distribution or out-distribution takes values in \(\{i,o\}\).&lt;/p&gt;
+
+&lt;p&gt;To enforce the desired behavior for out-of-distribution (OOD) samples, &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019)&lt;/a&gt; propose a &lt;strong&gt;reverse KL-divergence-based contrastive loss between in-distribution and out-distribution samples&lt;/strong&gt;. It consists of minimizing the reverse KL divergence between the neural network’s output and a sharp Dirichlet distribution focused on the appropriate class for in-distribution data, and between the output and a flat Dirichlet distribution for out-of-distribution data:&lt;/p&gt;
+
+\[\begin{align}
+\mathcal{L}_{\textrm{RKL-PN}}(\boldsymbol{\theta}) &amp;amp;= \mathbb{E}_{p(\boldsymbol{x},y)} \Big [ \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \bar{\boldsymbol{\beta}}) \big ) \Big ] \\
+&amp;amp;=\mathbb{E}_{p(\boldsymbol{x})} \Big [\sum_{c=1}^C P(y=c \vert \boldsymbol{x}) \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(c)}) \big ) \Big ] \\
+
+&amp;amp;=\mathbb{E}_{p(\boldsymbol{x} \vert i)} \Big [\sum_{c=1}^C P(y=c \vert \boldsymbol{x}) \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(c)}_{\textrm{in}}) \big ) \Big ] P(i) \\
+&amp;amp;~~~~~~+ \mathbb{E}_{p(\boldsymbol{x} \vert o)} \Big [\sum_{c=1}^C P(y=c \vert \boldsymbol{x}) \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(c)}_{\textrm{out}}) \big ) \Big ] P(o) \nonumber
+
+\end{align}\]
+
+&lt;p&gt;where \(\bar{\boldsymbol{\beta}} = \sum_{c=1}^C P(y=c \vert \boldsymbol{x}) \cdot \boldsymbol{\beta}^{(c)}\) is an arithmetic mixture of the target concentration parameters for each class.&lt;/p&gt;
+
+&lt;p&gt;We approximate with the empirical distributions \(\hat{p}(X \vert i)\) on \(\mathcal{D}_{\textrm{in}}\) and \(\hat{p}(X \vert o)\) on \(\mathcal{D}_{\textrm{out}}\), which boils down to minimize the following loss:&lt;/p&gt;
+
+\[\begin{align}
+\hat{\mathcal{L}}_{\textrm{RKL-PN}}(\boldsymbol{\theta}, \mathcal{D}_{\textrm{in}}, \mathcal{D}_{\textrm{out}})=  \sum_{i=1}^{N_i} &amp;amp;~\textrm{KL} \Big ( \textrm{Dir} \big ( \boldsymbol{\pi} \vert \boldsymbol{x}^{(i)}, \boldsymbol{\theta} \big ) ~\vert \vert~  \textrm{Dir} \big ( \boldsymbol{\pi} \vert \boldsymbol{\beta}_{\textrm{in}}^{(i)} \big ) \Big ) \\
+ &amp;amp;+ \gamma \sum_{j=1}^{N_o} \mathrm{KL} \Big ( \textrm{Dir} \big ( \boldsymbol{\pi} \vert \boldsymbol{x}^{(j)}, \boldsymbol{\theta} \big ) ~\vert \vert~ \textrm{Dir} \big (  \boldsymbol{\pi} \vert \boldsymbol{\beta}_{\textrm{out}}^{(j)} \big ) \Big ) \nonumber
+\end{align}\]
+
+&lt;p&gt;where in-domain target concentrations parameters are \(\boldsymbol{\beta}_{\textrm{in}}^{(i)}\) are such that \(\forall c\neq y^{(i)}, \boldsymbol{\beta}^{(i)}_{c, in}=1\) and \(\boldsymbol{\beta}^{(i)}_{y, in} = 1 + B\), with $B$ a hyperparameter. A flat uniform Dirichlet is chosen for out-domain target distribution : \(\forall c, \boldsymbol{\beta}_{c,\textrm{out}}^{(j)}=1\). Hyperparameter $\gamma = \hat{P}(o) / \hat{P}(i)$ helps to balance the out-of-distribution loss weight in training.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Authors chose $B=100$ to aim for in-domain distributions with high target concentration parameters.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;measuring-uncertainty&quot;&gt;Measuring uncertainty&lt;/h3&gt;
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt; consider measures from the expected predictive categorical distribution \(p(y \vert \boldsymbol{x^*}, \mathcal{D})\) as a mesure of &lt;strong&gt;total uncertainty&lt;/strong&gt;. This includes the Maximum Class Probability (MCP) and the predictive entropy \(\mathcal{H} \big [y \vert \boldsymbol{x^*}, \mathcal{D}]\).&lt;/p&gt;
+
+&lt;p&gt;Based on &lt;a class=&quot;citation&quot; href=&quot;#depeweg2018decomposition&quot;&gt;(Depeweg et al., 2018)&lt;/a&gt;, they decompose the predictive entropy into two terms :&lt;/p&gt;
+
+\[\begin{equation}
+\underbrace{\mathcal{H} \Big [ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big ]}_{\text{Total Uncertainty}} = \underbrace{\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \Big [ \mathcal{H} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big]}_{\text{Expected Aleatoric Uncertainty}} + \underbrace{\mathcal{MI} \Big [y, \boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}} \Big ]}_{\text{Epistemic Uncertainty}}
+\end{equation}\]
+
+&lt;ul&gt;
+  &lt;li&gt;\(\mathcal{MI} \Big [y, \boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}} \Big ]\) is the &lt;em&gt;mutual information&lt;/em&gt; between class label and categorical probabilities from the posterior. It corresponds to a measure of the spread of the posterior distribution \(p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})\)&lt;/li&gt;
+  &lt;li&gt;\(\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \Big [ \mathcal{H} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big]\) is the expected entropy of the categorical distribution.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;When dealing with ensemble methods, the expected entropy of the categorical distribution is computed with the Monte Carlo estimates. With Dirichlet networks, there is a closed-form.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In their experiments, they use the mutual information \(\mathcal{MI}\) to detect out-of-distribution samples and MCP for misclassification detection.&lt;/p&gt;
+
+&lt;h2 id=&quot;maximizing-the-gap-between-in--and-out-distribution-for-prior-networks-&quot;&gt;Maximizing the Gap between In- and Out-distribution for Prior Networks &lt;a name=&quot;max-gap&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#maximize-representation-gap2020&quot;&gt;(Nandy et al., 2020)&lt;/a&gt; motivate their work by showing that using the reverse KL-divergence tends to produce flatter Dirichlet distributions for in-domain misclassified examples. As a consequence, this effect may harden the goal of making in-domain and out-domain samples distinguishable.&lt;/p&gt;
+
+&lt;p&gt;To demonstrate this behavior, they decompose the KL-divergence into the &lt;em&gt;reverse cross-entropy&lt;/em&gt; and the &lt;em&gt;differential entropy&lt;/em&gt;:&lt;/p&gt;
+
+\[\begin{align}
+\mathcal{L}_{\textrm{RKL-PN}}(\boldsymbol{\theta}) &amp;amp;= \mathbb{E}_{p(\boldsymbol{x},y)} \Big [ \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\bar{\beta}}) \big ) \Big ] \\
+&amp;amp;= \mathbb{E}_{p(\boldsymbol{x})} \Big [ \underbrace{\mathbb{E}_{p( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta})} \big [- \log \textrm{Dir} \big ( \boldsymbol{\pi} \vert \boldsymbol{\bar{\beta}}) \big ]}_\text{Reverse Cross-Entropy} - \underbrace{\mathcal{H} \big [ \textrm{Dir} \big (\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta}) \big ] \Big ]}_\text{Differential Entropy}
+\label{eq:reverse-kl}
+\end{align}\]
+
+&lt;p&gt;Minimizing the differential entropy always leads to produce a flatter distribution. Hence, \(\mathcal{L}_{\textrm{RKL-PN}}\) relies only on the reverse cross-entropy to produce sharper distributions. This latter term can be derived as:&lt;/p&gt;
+
+\[\begin{align}
+\mathbb{E}_{p( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta})} \big [- \log \textrm{Dir} \big ( \boldsymbol{\pi} \vert \bar{\boldsymbol{\beta}}) \big ] &amp;amp;= \sum_{c=1}^C P(y=c \vert \boldsymbol{x}) (1 + B - 1)(\psi(\alpha_0) - \psi(\alpha_c)) \\
+&amp;amp;= B\cdot \psi(\alpha_0) - \sum_{c=1}^C B \cdot P(y=c \vert \boldsymbol{x})\psi(\alpha_c)
+\label{eq:rce}
+\end{align}\]
+
+&lt;p&gt;We can see in Eq.(\ref{eq:rce}) that the reverse cross-entropy term maximizes $\psi(\alpha_c)$ for each class $c$ with the factor $B \cdot P(y=c \vert \boldsymbol{x})$, while minimizing $\psi(\alpha_c)$ with the factor $B$. Imagine a sample with high aleatoric uncertainty, the reverse cross-entropy will leads to smaller concentration parameters $\boldsymbol{\alpha}$ than a confident sample.&lt;/p&gt;
+
+&lt;p&gt;The proposed solution is to &lt;strong&gt;force OOD samples to have even more lower concentration parameters&lt;/strong&gt;, ideally \(\boldsymbol{\alpha}_{\textrm{out}} \rightarrow 0\).&lt;/p&gt;
+
+&lt;h3 id=&quot;learning-1&quot;&gt;Learning&lt;/h3&gt;
+&lt;p&gt;Looking at the reverse cross-entropy term in Eq.(\ref{eq:rce}), a first solution could be to modify the target \(\beta_{\text{out}}\) within the reverse KL-divergence. Currently, \(\beta_{\text{out}}=1\) for OOD samples. Setting \(\beta_{\text{out}}&amp;gt;1\) would minimize $\alpha_0$ but also maximises individual concentration parameters $\alpha_c$. Conversely, $\beta_{\text{out}} \in [0,1[$ maximises $\alpha_0$ while minimizing $\alpha_c$’s. Eithier choice of $\beta_{\text{out}}$ may lead to uncontrolled values.&lt;/p&gt;
+
+&lt;p&gt;Instead, &lt;a class=&quot;citation&quot; href=&quot;#maximize-representation-gap2020&quot;&gt;(Nandy et al., 2020)&lt;/a&gt; propose a new loss for Dirichlet Networks based on the usual cross-entropy loss and a &lt;strong&gt;explicit regularization on the concentration parameters&lt;/strong&gt;:&lt;/p&gt;
+
+\[\begin{align}
+\mathcal{L}_{\textrm{Max-PN}}(\boldsymbol{\theta}) = &amp;amp;\mathbb{E}_{p(\boldsymbol{x}, y \vert i)} \Big [ - \log p(y \vert \boldsymbol{x}, \boldsymbol{\theta}) - \frac{\lambda_{\textrm{i}}}{C} \sum_{c=1}^C \sigma(\alpha_c) \Big ] \\ 
+&amp;amp;+ \gamma \cdot \mathbb{E}_{p(\boldsymbol{x},y \vert o)} \Big [ - \frac{1}{C} \sum_{c=1}^C \log P(y=c \vert \boldsymbol{x}, \boldsymbol{\theta}) - \frac{\lambda_{\textrm{o}}}{C} \sum_{c=1}^C \sigma(\alpha_c) \Big ] \nonumber
+\end{align}\]
+
+&lt;p&gt;where \(\sigma\) the sigmoid function, \(\lambda_{\textrm{i}}\) and \(\lambda_{\textrm{o}}\) hyperparameters to control the precision of respective output distributions and \(\gamma = p(o)/p(i)\) balancing loss values between in- and out-domain distribution. Note that the term \(- \frac{1}{C} \sum_{c=1}^C \log P(y=c \vert \boldsymbol{x}, \boldsymbol{\theta})\) corresponds to minimise the cross-entropy with an uniform distribution.&lt;/p&gt;
+
+&lt;p&gt;To enforce negative values for OOD concentration parameters, authors chose \(\lambda_{\textrm{o}} = 1/C - 1/2 &amp;lt;0\). It leads the probability densities to be moved across the edges of the simplex to produce extremely sharp multi-modal distributions. They set \(\lambda_{\textrm{i}} = 1/2\) for in-domain examples.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note that chosing \(\lambda_{\textrm{i}} = \lambda_{\textrm{o}} = 0\) leads to the same loss proposed in a non-Bayesian outlier exposure framework proposed by &lt;a class=&quot;citation&quot; href=&quot;#hendrycks2019oe&quot;&gt;(Hendrycks et al., 2019)&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;measuring-uncertainty-1&quot;&gt;Measuring uncertainty&lt;/h3&gt;
+&lt;p&gt;As they explicitely regularize the logits, &lt;a class=&quot;citation&quot; href=&quot;#maximize-representation-gap2020&quot;&gt;(Nandy et al., 2020)&lt;/a&gt; use \(\alpha_0 = \sum_c \alpha_c\) the sum of the concentration parameters of posterior distribution. In parallel, they also mention the &lt;em&gt;differential entropy&lt;/em&gt; \(\mathcal{H} \big [ p( \boldsymbol{\pi} \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \big ]\), which is the entropy of the posterior distribution over probabilities :&lt;/p&gt;
+
+\[\begin{equation}
+\mathcal{H} \big [ p( \boldsymbol{\pi} \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \big ] = \int p( \boldsymbol{\pi} \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \log p( \boldsymbol{\pi} \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) d\boldsymbol{\pi}
+\end{equation}\]
+
+&lt;p&gt;In particular, the differential entropy is equivalent to measuring the KL-divergence between the posterior distribution and a Dirichlet uniform \(\mathrm{Dir}(\boldsymbol{\pi} \vert \mathbf{u})\) where \(\forall c, u_c = 1\).&lt;/p&gt;
+
+&lt;p&gt;They measure OOD detection with mutual information or $\alpha_0$ and misclassification detection with MCP.&lt;/p&gt;
+
+&lt;h2 id=&quot;evidential-networks-&quot;&gt;Evidential Networks &lt;a name=&quot;evidential-networks&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;For now on, we will assume there is &lt;strong&gt;no OOD data available in training&lt;/strong&gt; for the rest of the approaches presented below.&lt;/p&gt;
+
+&lt;p&gt;In a concurrent work to &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt;, &lt;a class=&quot;citation&quot; href=&quot;#sensoy2018&quot;&gt;(Sensoy et al., 2018)&lt;/a&gt; also develop a Dirichlet-based model for neural network based on &lt;strong&gt;subjective logic&lt;/strong&gt; &lt;a class=&quot;citation&quot; href=&quot;#josan2016sublogic&quot;&gt;(Josang, 2016)&lt;/a&gt; framework. Subjective logic formalizes the Dempster-Shafer theory’s notion of belief assignements over a frame of discernement as a Dirichlet distribution.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The Dempster-Shafer theory of evidence &lt;a class=&quot;citation&quot; href=&quot;#dempster2008&quot;&gt;(Dempster, 2008)&lt;/a&gt; is a generalization of the Bayesian theory to subjective probabilities. It assigns belief masses to subsets of a frame of discernment, which denotes the set of exclusive possible states, &lt;em&gt;e.g.&lt;/em&gt; possible class labels for a sample.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In practice, it boils down to account for an overall uncertainty mass of $u$ added to belief classes \(b_c\):&lt;/p&gt;
+
+\[\begin{equation}
+u + \sum_{c=1}^C b_c = 1
+\end{equation}\]
+
+&lt;p&gt;where $u \geq 0$ and \(\forall c \in \mathcal{y}, b_c \geq 0\). A belief mass \(b_c\) for a singleton $c$ is computed using the evidence for the singleton. Let \(e_c \geq 0\) be the evidence derived for the $c^{th}$ singleton, then the belief \(b_c\) and the uncertainty $u$ are computed as:&lt;/p&gt;
+
+\[\begin{equation}
+b_c = \frac{e_c}{S} \quad \textrm{and} \quad u = \frac{C}{S}
+\end{equation}\]
+
+&lt;p&gt;where \(S = \sum_{c=1}^C (e_c +1)\). Note that the uncertainty is inversely proportional to the total evidence.&lt;/p&gt;
+
+&lt;p&gt;The link to Dirichlet distribution is as follow. Concentration parameters of distribution \(p(\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta})\) corresponds to evidences \(\alpha_c = e_c + 1\). Then, we obtain that \(S = \alpha_0\), which represents the spread of the distribution.&lt;/p&gt;
+
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#sensoy2018&quot;&gt;(Sensoy et al., 2018)&lt;/a&gt; propose to model the concentration parameters by a neural network output, hence:&lt;/p&gt;
+
+\[\begin{equation}
+\boldsymbol{\alpha} = \textrm{ReLU} \big ( f(\boldsymbol{x}, \boldsymbol{\theta}) \big ) + 1
+\end{equation}\]
+
+&lt;p&gt;In contrast to previous work, they differs in the modelisation by replacing the softmax layer with an ReLU activation layer to ensure non-negative outputs.&lt;/p&gt;
+
+&lt;h3 id=&quot;learning-2&quot;&gt;Learning&lt;/h3&gt;
+&lt;p&gt;Authors propose to train their Evidential Neural Network by &lt;strong&gt;minimizing the Bayes risk of the MSE loss with respect to the ‘class predictor’&lt;/strong&gt;:&lt;/p&gt;
+
+\[\begin{align}
+\mathcal{L}_{\textrm{ENN}}(\boldsymbol{\theta}) = \mathbb{E}_{p(\boldsymbol{x}, y)} \Big [\int \vert \vert \boldsymbol{y} - \boldsymbol{\pi} \vert \vert^2 \cdot p(\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta}) d\boldsymbol{\pi} + \lambda_t \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \tilde{\boldsymbol{\alpha}} ) ~\vert \vert~  \textrm{Dir} (\boldsymbol{\pi} \vert \mathbf{u}) \big ) \Big ]
+\end{align}\]
+
+&lt;p&gt;Added to the Bayes risk, they also incorporate a KL-divergence regularization term which penalize ‘unknown’ predictive distributions. $\boldsymbol{y}$ denotes the one-hot representation of $y$, \(\textrm{Dir} (\boldsymbol{\pi} \vert \mathbf{u})\) is the Dirichlet uniform distribution and \(\tilde{\boldsymbol{\alpha}} = \boldsymbol{y} + (1- \boldsymbol{y}) \odot \boldsymbol{\alpha}\) is the Dirichlet parameters after removal of the non-misleading evidence from predicted parameters $\boldsymbol{\alpha}$. In the paper, \(\lambda_t = \min (1, t/10) \in [0, 1]\) is an annealing coefficient, with $t$ is the index of the current training epoch.&lt;/p&gt;
+
+&lt;p&gt;In particular, they also provide some interesting theoretical properties the Bayes risk minimization with MSE loss thanks to the variance identity:&lt;/p&gt;
+
+\[\begin{align}
+\int \vert \vert \boldsymbol{y} - \boldsymbol{\pi} \vert \vert^2 \cdot p(\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta}) d\boldsymbol{\pi} &amp;amp;= \mathbb{E}_{p( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta})} \Big [(\boldsymbol{y} - \boldsymbol{\pi})^2 \Big ] \\
+&amp;amp;=  \mathbb{E}_{p( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta})} \Big [\boldsymbol{y} - \boldsymbol{\pi} \Big ]^2 + \textrm{Var} \Big [ \boldsymbol{y} - \boldsymbol{\pi} \Big ] \\
+&amp;amp;= \sum_{c=1}^C (y_c - \alpha_c / \alpha_0)^2 + \frac{\alpha_c(\alpha_0 - \alpha_c)}{\alpha_0^2(\alpha_c + 1)}
+\end{align}\]
+
+&lt;p&gt;The derivation decompose the loss into the first and second moments, which highlight it aims to achieve the joint goals of &lt;strong&gt;minimizing the prediction error and the variance of the Dirichlet distribution output by the neural network&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;measuring-uncertainty-2&quot;&gt;Measuring uncertainty&lt;/h3&gt;
+&lt;p&gt;Without further reflection, &lt;a class=&quot;citation&quot; href=&quot;#sensoy2018&quot;&gt;(Sensoy et al., 2018)&lt;/a&gt; use predictive entropy \(\mathcal{H} \big [y \vert \boldsymbol{x^*}; \boldsymbol{\theta}]\) as uncertainty measure to be consistent with other approaches used in literature. Experiments include OOD detection and adversarial robustness.&lt;/p&gt;
+
+&lt;h2 id=&quot;generative-evidential--networks-&quot;&gt;Generative Evidential  Networks &lt;a name=&quot;generative-evidential&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;While, Evidential networks enable to account aleatoric and epistemic uncertainty separately, they fail to induce to desired behavior for out-of-distribution samples. There is no constraint on the out-distribution domain and models could still be able to derive large amount of evidence and become overconfident in their predictions for OOD samples.&lt;/p&gt;
+
+&lt;p&gt;To alleviate this issue, &lt;a class=&quot;citation&quot; href=&quot;#sensoy2020&quot;&gt;(Sensoy et al., 2020)&lt;/a&gt; extend their previous work and propose to &lt;strong&gt;synthetise out-of-distribution samples close to training samples&lt;/strong&gt; thank to a generative model. Then, they learn a classifier using both types of samples and based on &lt;strong&gt;&lt;em&gt;implicit&lt;/em&gt; density modeling&lt;/strong&gt; to account for out-of-distribution samples during training.&lt;/p&gt;
+
+&lt;h3 id=&quot;implicit-density-modeling&quot;&gt;Implicit density modeling&lt;/h3&gt;
+
+&lt;p&gt;A convenient way to describe density of samples from a class $c$ is to describe it relative to the density of some other reference data. By using the same reference data for all classes in the training set, one desire to get comparable quantities for their density estimations. We reformulate the ratio between densities \(p(\boldsymbol{x} \vert y=c)\) and \(p(\boldsymbol{x} \vert o)\) as:&lt;/p&gt;
+
+\[\begin{equation}
+\frac{p(\boldsymbol{x} \vert y=c)}{p(\boldsymbol{x} \vert o)} = \frac{P(y=c \vert \boldsymbol{x})}{p(o \vert \boldsymbol{x})} \frac{P(o)}{P(y=c)}
+\label{eq:density-ratio}
+\end{equation}\]
+
+&lt;p&gt;where \(\frac{p(o)}{P(y=c)}\) can be approximated with the empirical count of samples of class $c$ and the empirical count of out-of-distribution training samples.&lt;/p&gt;
+
+&lt;p&gt;As shown in Eq.(\ref{eq:density-ratio}), one can approximate the log density ratio \(\log \frac{p(\boldsymbol{x} \vert y=c)}{p(\boldsymbol{x} \vert o)}\) as the logit output of a binary classifier &lt;a class=&quot;citation&quot; href=&quot;#implicit2017&quot;&gt;(Lakshminarayanan &amp;amp; Mohamed, 2017)&lt;/a&gt;, which is trained to discriminate between the samples from $P(y=c)$ and $P(o)$. Hence, along with the Dirichlet framework, each output \(f_c(\boldsymbol{x}, \boldsymbol{\theta})\) of a neural network classifier now also aims to approximate the log density ratio.&lt;/p&gt;
+
+&lt;p&gt;Concentration parameters are defined as \(\boldsymbol{\alpha} = e^{f(\boldsymbol{x}, \boldsymbol{\theta})} + 1\). If a sample $\boldsymbol{x}$ tends to be from out domain, then the density ratio should be close to zero, meaning almost zero evidence generated by the network for that sample.&lt;/p&gt;
+
+&lt;h3 id=&quot;learning-3&quot;&gt;Learning&lt;/h3&gt;
+
+&lt;p&gt;Authors use the &lt;strong&gt;Bernoulli loss&lt;/strong&gt; to train their network with a &lt;strong&gt;regularization term for misclassified samples&lt;/strong&gt;:&lt;/p&gt;
+
+\[\begin{align}
+\mathcal{L}_{\textrm{GEN}}(\boldsymbol{\theta}) = - \sum_{c=1}^C \Big (\mathbb{E}_{p(\boldsymbol{x} \vert c, i)} \big [&amp;amp;\log \sigma ( f_c(\boldsymbol{x}, \boldsymbol{\theta})) \big ] + \mathbb{E}_{p(\boldsymbol{x} \vert o)} \big [\log \big ( 1 - \sigma ( f_c(\boldsymbol{x}, \boldsymbol{\theta})) \big ) \big ] \Big ) \\
+&amp;amp;+ \lambda \cdot \mathbb{E}_{p(\boldsymbol{x},y \vert i)} \Big [ \textrm{KL} \big ( \textrm{Dir} (\boldsymbol{\pi}_{-y} \vert \boldsymbol{\alpha}_{-y} )~\vert \vert~ \textrm{Dir} (\boldsymbol{\pi}_{-y} \vert \mathbf{u}) \big ) \Big ] \nonumber
+\end{align}\]
+
+&lt;p&gt;where $\sigma$ is the sigmoid function, \(\boldsymbol{\pi}_{-y}\) and \(\boldsymbol{\alpha}_{-y}\) refers to the vector of probabilities \(\pi_c\) and the vector of concentration parameters \(\alpha_c\) such that \(c \neq y\). The regularization term aims to push concentration parameters of all classes $c \neq y$ to be close to uniform by minimizing a KL-divergence with the Dirichlet uniform distribution $\mathbf{u}$.&lt;/p&gt;
+
+&lt;p&gt;Finally, $\lambda$ is an sample-level hyperparameter controlling the weight of the regularization term. Authors defines $\lambda = 1 - \alpha_y / \alpha_0$, which is the expected probability of misclassification. Hence, when used as a weight of the KL-divergence term, it enables a &lt;em&gt;learned loss attenuation&lt;/em&gt;: as the aleatoric uncertainty decreases, the weight of the regularization term decrease as well.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note that this contrastive training is inspired from noise-constrative estimation &lt;a class=&quot;citation&quot; href=&quot;#gutmann2012noise&quot;&gt;(Gutmann &amp;amp; Hyvärinen, 2012)&lt;/a&gt; with the difference here that noisy data are generalized to out-of-distribution samples.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;generating-out-of-distribution-samples&quot;&gt;Generating out-of-distribution samples&lt;/h3&gt;
+
+&lt;p&gt;To synthesize out-of-distribution samples, &lt;a class=&quot;citation&quot; href=&quot;#sensoy2020&quot;&gt;(Sensoy et al., 2020)&lt;/a&gt; relies on the &lt;strong&gt;latent space of a variational autoencoder&lt;/strong&gt; (VAE) where they perturb in-domain sample representation with a multivariate Gaussian distribution. More precisely, for each $\boldsymbol{x}$ in training dataset, they sample a latent point $\boldsymbol{z}$ from the latent space distribution learned by a VAE and perturb it by \(\boldsymbol{\epsilon} \sim \mathcal{N}(\boldsymbol{0}, G(\boldsymbol{z}))\) where $G(\cdot)$ is a generative adversarial network (GAN) with non-negative output and adversarially trained against two discriminators (one that acts in the latent space, the other one in the input space). The VAE, generator and discriminators are iteratively trained until convergence.&lt;/p&gt;
+
+&lt;h3 id=&quot;measuring-uncertainty-3&quot;&gt;Measuring uncertainty&lt;/h3&gt;
+&lt;p&gt;As with Evidential Networks, &lt;a class=&quot;citation&quot; href=&quot;#sensoy2020&quot;&gt;(Sensoy et al., 2020)&lt;/a&gt; use predictive entropy \(\mathcal{H} \big [y \vert \boldsymbol{x^*}, \boldsymbol{\theta})]\) as uncertainty measure. Experiments include misclassification detection, OOD detection and adversarial robustness.&lt;/p&gt;
+
+&lt;h2 id=&quot;variational-inference-for-dirichlet-networks-&quot;&gt;Variational inference for Dirichlet Networks &lt;a name=&quot;variational-inference&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Using the &lt;strong&gt;Bayesian principle&lt;/strong&gt;, the true posterior distribution over categorical distribution for a sample $(\boldsymbol{x}, y)$ can be obtained by:&lt;/p&gt;
+
+\[\begin{equation}
+p(\boldsymbol{\pi} \vert \boldsymbol{x}, y) \propto p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) p(\boldsymbol{\pi} \vert \boldsymbol{x})
+\end{equation}\]
+
+&lt;p&gt;Just as in the preliminaries for a Dirichlet-multinomial model, we define the prior \(p(\boldsymbol{\pi} \vert \boldsymbol{x})\) as a Dirichlet distribution with concentration parameters $\boldsymbol{\beta}$, which is conjugate to the categorical likelihood. Hence, we have the following posterior given dataset $\mathcal{D}$:&lt;/p&gt;
+
+\[\begin{equation}
+p(\boldsymbol{\pi} \vert \boldsymbol{x},y) = \mathrm{Dir} \Big (\boldsymbol{\pi} \vert \beta_1 + \tilde{N}_1(\boldsymbol{x}),..., \beta_K + \tilde{N}_K(\boldsymbol{x}) \Big )
+\label{eq:posterior_distribution}
+\end{equation}\]
+
+&lt;p&gt;where \(\tilde{N}_c(\boldsymbol{x})\) now represents the empirical label frequency count at point \(\boldsymbol{x}\). Again, we see that the target posterior mean is explicitly &lt;em&gt;smoothed&lt;/em&gt; by the prior belief. However, when predicting for a new sample $\boldsymbol{x}^*$, we obviously don’t know its label frequency.&lt;/p&gt;
+
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#beingbayesian2020&quot;&gt;(Joo et al., 2020)&lt;/a&gt; propose to approximate the posterior distribution with a variational distribution $q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})$ modeled by the neural network’s output. They chose \(q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})\) to be a Dirichlet distribution whose concentration parameters are \(\boldsymbol{\alpha} = e^{f(\boldsymbol{x}, \boldsymbol{\theta})}\).&lt;/p&gt;
+
+&lt;h3 id=&quot;learning-4&quot;&gt;Learning&lt;/h3&gt;
+&lt;p&gt;In variational inference, the goal is to bring the variational distribution \(q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})\) closer to the true posterior distribution \(p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)\). In a standard way, &lt;a class=&quot;citation&quot; href=&quot;#beingbayesian2020&quot;&gt;(Joo et al., 2020)&lt;/a&gt;, as well as &lt;a class=&quot;citation&quot; href=&quot;#vardir2019&quot;&gt;(Chen et al., 2019)&lt;/a&gt;, minimize the KL-divergence between the two distributions:&lt;/p&gt;
+
+\[\begin{align}
+    \mathrm{KL} \Big ( q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}, y) \Big )
+  &amp;amp;= \int q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \log \frac{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})}{p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)} \nonumber \\
+  &amp;amp;= \int q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \log \frac{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) p(y \vert \boldsymbol{x})}{p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) p(\boldsymbol{\pi} \vert \boldsymbol{x})} \nonumber \\ 
+  &amp;amp;= \int - q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) + \int q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \log \frac{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})}{p(\boldsymbol{\pi} \vert \boldsymbol{x})} + p(y \vert \boldsymbol{x}) \nonumber \\
+  &amp;amp;= \mathbb{E}_{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \Big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \Big ] + \mathrm{KL} \Big (q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \Big ) + p(y \vert \boldsymbol{x})
+  \label{eq:elbo}
+\end{align}\]
+
+&lt;p&gt;From Eq.(\ref{eq:elbo}), we can observe that minimizing the KL-divergence here is equivalent to maximizing the evidence lower bound (ELBO). Loss function writes as:&lt;/p&gt;
+
+\[\begin{equation}
+	\mathcal{L}_{\textrm{VI}}(\boldsymbol{\theta}) = \mathbb{E}_{p(\boldsymbol{x}, y)} \Big [ \mathbb{E}_{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \big ] + \mathrm{KL} \big (q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  \Big] 
+	\label{eq:variational_inference}
+\end{equation}\]
+
+&lt;p&gt;The first term can be further derived as \(\mathbb{E}_{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \big ] \propto \psi(\alpha_y) - \psi(\alpha_0)\). Regarding the KL-divergence with the prior, authors chose to set concentrations parameters $\boldsymbol{\beta} = 1$.&lt;/p&gt;
+
+&lt;p&gt;Now what’s interesting is that &lt;strong&gt;\(\mathcal{L}_{\textrm{VI}}(\boldsymbol{\theta})\) actually corresponds to the reverse KL-divergence loss Eq.(\ref{eq:reverse-kl}) for in-domain samples!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We can show that given uniform concentration parameters, the KL-divergence between the variational distribution and the uniform prior distribution over probabilities is equivalent to compute the differential entropy of the variational distribution:&lt;/p&gt;
+
+\[\begin{equation}
+\mathrm{KL} \big (q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  = - \mathcal{H} \big [ q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x}) \big ] + \log \Gamma(K)
+\end{equation}\]
+&lt;/blockquote&gt;
+
+&lt;p&gt;While &lt;a class=&quot;citation&quot; href=&quot;#beingbayesian2020&quot;&gt;(Joo et al., 2020)&lt;/a&gt; actually propose the same loss than &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019)&lt;/a&gt;, they do not act on pushing OOD samples to yield a flat distribution over the simplex. Hence, this work mostly boils down to a &lt;strong&gt;Bayesian smoothing&lt;/strong&gt; on in-distribution samples, such as for label smoothing.&lt;/p&gt;
+
+&lt;h3 id=&quot;measuring-uncertainty-4&quot;&gt;Measuring uncertainty&lt;/h3&gt;
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#beingbayesian2020&quot;&gt;(Joo et al., 2020)&lt;/a&gt; don’t really focus on chosing a good uncertainty measure and rely on using softmax probabilities for the evaluation of confidence calibration and predictive entropy for OOD detection.&lt;/p&gt;
+
+&lt;h2 id=&quot;posterior-networks-a-density-based-approach-&quot;&gt;Posterior Networks, a Density-based Approach &lt;a name=&quot;posterior-networks&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;To ensure a high epistemic uncertainty on the out-domain samples, &lt;a class=&quot;citation&quot; href=&quot;#postnetworks2020&quot;&gt;(Charpentier et al., 2020)&lt;/a&gt; use &lt;strong&gt;normalizing flows&lt;/strong&gt; to learn the posterior distribution \(p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)\) over Dirichlets parameters on a &lt;strong&gt;latent space&lt;/strong&gt;. The idea is to assign high density on region with many training examples which force low density elsewhere to fulfill the integration constraint.&lt;/p&gt;
+
+&lt;p&gt;They map an input $\boldsymbol{x}$ onto a low-dimensional latent vector \(\boldsymbol{z} = f(\boldsymbol{x}, \boldsymbol{\theta}) \in \mathbb{R}^H\) thanks to an encoder neural network. Then, they learn a normalized probability density $p(\boldsymbol{z} \vert c, \boldsymbol{\phi})$ per class on the latent space with a density estimator parametrized by \(\boldsymbol{\phi}\) such as radial flows &lt;a class=&quot;citation&quot; href=&quot;#rezende15&quot;&gt;(Rezende &amp;amp; Mohamed, 2015)&lt;/a&gt;. Finally, they compute the pseudo-observations of class $c$ at $\boldsymbol{z}$ as:&lt;/p&gt;
+
+\[\begin{equation}
+	\tilde{N}_c (\boldsymbol{x}) = N_c \cdot p(\boldsymbol{z} \vert c, \phi) = N \cdot p(\boldsymbol{z} \vert c, \boldsymbol{\phi}) pPy=c)
+\end{equation}\]
+
+&lt;p&gt;where $N_c$ is the number of ground-truth observations for class $c$ in training dataset $\mathcal{D}$. Given this learned pseudo-count, we can compute the posterior \(p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)\) with Eq.(\ref{eq:posterior_distribution}).&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note that here $f$ is different from earlier as it denotes a feature extractor and not the entire neural network classifier.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;analysis&quot;&gt;Analysis&lt;/h3&gt;
+&lt;p&gt;Let us look at the mean of the Dirichlet posterior for class probability \(\boldsymbol{\pi}_c\):&lt;/p&gt;
+
+\[\begin{equation}
+	\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)} \big [\boldsymbol{\pi}_c \big ] = \frac{\beta_c + N \cdot P(y=c \vert \boldsymbol{z}, \boldsymbol{\phi}) \cdot p(\boldsymbol{z}, \boldsymbol{\phi})}{\sum_{c=1}^C \beta_c + N \cdot p(\boldsymbol{z}, \boldsymbol{\phi})}
+	\label{eq:mean_posterior}
+\end{equation}\]
+
+&lt;ul&gt;
+  &lt;li&gt;For in-distribution data, \(p(\boldsymbol{z}, \boldsymbol{\phi}) \rightarrow \infty\), then \(\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)} \big [\boldsymbol{\pi}_c \big ]\) converges to the true categorical distribution \(P(y=c \vert \boldsymbol{z}, \boldsymbol{\phi})\)&lt;/li&gt;
+  &lt;li&gt;For out-of-distribution data, \(p(\boldsymbol{z}, \boldsymbol{\phi}) \rightarrow 0\), then \(\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x}, y)} \big [\boldsymbol{\pi}_c \big ]\) converges to the flat prior distribution $[1/C,…,1/C]$ if we defined a uniform prior $\boldsymbol{\beta} = \boldsymbol{1}$&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Figure below provide an illustration for three different inputs: $\boldsymbol{x^{(1)}}$ a correct prediction, $\boldsymbol{x^{(2)}}$ an ambiguous in-domain sample, and $\boldsymbol{x^{(3)}}$ an out-of-distribution sample.&lt;/p&gt;
+
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;img src=&quot;/images/posterior_networks.png&quot; alt=&quot;posterior_networks&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From &lt;a class=&quot;citation&quot; href=&quot;#postnetworks2020&quot;&gt;(Charpentier et al., 2020)&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Each input $\boldsymbol{x^{(i)}}$ is mapped to their to their latent vector $\boldsymbol{z^{(i)}}$. The normalizing flow component learns flexible density
+functions \(P(\boldsymbol{z} \vert y=c, \boldsymbol{\phi})\), for which we evaluate their densities at the positions of the latent vectors $\boldsymbol{z^{(i)}}$. These densities are used to parameterize a Dirichlet distribution for each data point, as seen on the right hand side. Higher densities correspond to higher confidence in the Dirichlet distributions.&lt;/p&gt;
+
+  &lt;p&gt;We can observe that the out-of-distribution sample $\boldsymbol{x^{(3)}}$ is mapped to a point with (almost) no density, and hence its predicted Dirichlet distribution has very high epistemic uncertainty. On the other hand, $\boldsymbol{x^{(2)}}$  is an ambiguous example that could depict either the digit 0 or 6. This is reflected in its corresponding Dirichlet distribution, which has high aleatoric uncertainty (as the sample is ambiguous), but low epistemic uncertainty (since it is from the distribution of hand-drawn digits). The unambiguous sample $\boldsymbol{x^{(1)}}$  has low overall uncertainty.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;learning-5&quot;&gt;Learning&lt;/h3&gt;
+&lt;p&gt;Training loss is similar to the ELBO loss used in variational inference for Eq.(\ref{eq:variational_inference}) by optimizing jointly over the neural network parameters $\boldsymbol{\theta}$ and normalizing flow parameters $\boldsymbol{\phi}$:&lt;/p&gt;
+
+\[\begin{equation}
+	\mathcal{L}_{\textrm{PostNet}}(\boldsymbol{\theta}, \boldsymbol{\phi}) = \mathbb{E}_{p(\boldsymbol{x}, y)} \Big [ \mathbb{E}_{q_{\boldsymbol{\theta}, \boldsymbol{\phi}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \big ] + \mathrm{KL} \big (q_{\boldsymbol{\theta}, \boldsymbol{\phi}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  \Big] 
+\end{equation}\]
+
+&lt;h3 id=&quot;measuring-uncertainty-5&quot;&gt;Measuring uncertainty&lt;/h3&gt;
+&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#postnetworks2020&quot;&gt;(Charpentier et al., 2020)&lt;/a&gt; evaluate many uncertainty tasks such as misclassification detection, confidence calibration, OOD detection and robustness to dataset shift. In each task, they use 2 different measures: one for aleatoric uncertainty and one for epistemic uncertainty&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;Misclassification detection&lt;/em&gt;: MCP as aleatoric measure; \(\max_c \alpha_c\) as epistemic measure, which corresponds to the logits of the predictive class,&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Confidence calibration&lt;/em&gt;: they simply use the Brier score with the output of the neural network,&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;OOD detection&lt;/em&gt;: MCP as aleatoric measure; $\alpha_0$ as epistemic measure,&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Robustness to dataset shifts&lt;/em&gt;: obviously the accuracy on the shifted dataset.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;summary-and-discussion-&quot;&gt;Summary and Discussion &lt;a name=&quot;summary&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;In light of this thorough analysis of each approach, we can see that most of them actually define similarly its loss.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Method&lt;/th&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Loss&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;\(\alpha\)-parametrization&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;OOD training data&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Prior Networks&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;\(\mathcal{L}_{\textrm{RKL-PN}}(\boldsymbol{\theta}) = \mathbb{E}_{p(\boldsymbol{x} \vert i)} \Big [\sum_{c=1}^C p(y=c \vert \boldsymbol{x}) \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(c)}_{\textrm{in}}) \big ) \Big ])\) &lt;br /&gt; \(~~~\quad\quad\quad\quad\quad + \gamma \cdot \mathbb{E}_{p(\boldsymbol{x} \vert o)} \Big [\sum_{c=1}^C p(y=c \vert \boldsymbol{x}) \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(c)}_{\textrm{out}}) \big ) \Big ]\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;\(\alpha_c = e^{f_c(\boldsymbol{x}, \boldsymbol{\theta})}\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Yes&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Max-Gap Prior Networks&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;\(\mathcal{L}_{\textrm{Max-PN}}(\boldsymbol{\theta}) = \mathbb{E}_{p(\boldsymbol{x}, y \vert i)} \Big [ - \log p(y \vert \boldsymbol{x}, \boldsymbol{\theta}) - \frac{\lambda_{\textrm{i}}}{C} \sum_{c=1}^C \sigma(\alpha_c) \Big ]\) &lt;br /&gt; \(\quad\quad\quad\quad\quad\quad\quad + \gamma \cdot \mathbb{E}_{p(\boldsymbol{x}, y \vert o)} \Big [ \mathcal{H} \big [p(y \vert \boldsymbol{x}, \boldsymbol{\theta}) \big ] - \frac{\lambda_{\textrm{o}}}{C} \sum_{c=1}^C \sigma(\alpha_c) \Big ]\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;\(\alpha_c = e^{f_c(\boldsymbol{x}, \boldsymbol{\theta})}\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Yes&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Evidential Networks&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;\(\mathcal{L}_{\textrm{ENN}}(\boldsymbol{\theta}) = \mathbb{E}_{p(\boldsymbol{x}, y)} \Big [\int \vert \vert \boldsymbol{y} - \boldsymbol{\pi} \vert \vert^2 \cdot p(\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta}) d\boldsymbol{\pi} + \lambda_t \cdot \textrm{KL} \big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \tilde{\boldsymbol{\alpha}} ) ~\vert \vert~  \textrm{Dir} (\boldsymbol{\pi} \vert \mathbf{u}) \big ) \Big ]\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;\(\alpha_c = \textrm{ReLU} \big ( f_c(\boldsymbol{x}, \boldsymbol{\theta}) \big ) + 1\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;No&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Generative Evidential Networks&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;\(\mathcal{L}_{\textrm{GEN}}(\boldsymbol{\theta}) = - \sum_{c=1}^C \Big (\mathbb{E}_{p(\boldsymbol{x} \vert c, i)} \big [\log \sigma ( f_c(\boldsymbol{x}, \boldsymbol{\theta})) \big ] + \mathbb{E}_{p(\boldsymbol{x} \vert o)} \big [\log \big ( 1 - \sigma ( f_c(\boldsymbol{x}, \boldsymbol{\theta})) \big ) \big ] \Big )\) &lt;br /&gt; \(\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad+ \lambda \cdot \mathbb{E}_{p(\boldsymbol{x},y \vert i)} \Big [ \textrm{KL} \big ( \textrm{Dir} (\boldsymbol{\pi}_{-y} \vert \boldsymbol{\alpha}_{-y} )~\vert \vert~ \textrm{Dir} (\boldsymbol{\pi}_{-y} \vert \mathbf{u}) \big ) \Big ]\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;\(\boldsymbol{\alpha} = e^{f(\boldsymbol{x}, \boldsymbol{\theta})} + 1\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;No&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Variational Inference&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;\(\mathcal{L}_{\textrm{VI}}(\boldsymbol{\theta}) = \mathbb{E}_{p(\boldsymbol{x}, y)} \Big [ \mathbb{E}_{q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \big ] + \mathrm{KL} \big (q_{\boldsymbol{\theta}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  \Big]\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;\(\alpha_c = e^{f_c(\boldsymbol{x}, \boldsymbol{\theta})}\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;No&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Posterior Networks&lt;/strong&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;\(\mathcal{L}_{\textrm{PostNet}}(\boldsymbol{\theta}, \boldsymbol{\phi}) = \mathbb{E}_{p(\boldsymbol{x}, y)} \Big [ \mathbb{E}_{q_{\boldsymbol{\theta}, \boldsymbol{\phi}}(\boldsymbol{\pi} \vert \boldsymbol{x})} \big [ - \log p(y \vert \boldsymbol{\pi}, \boldsymbol{x}) \big ] + \mathrm{KL} \big (q_{\boldsymbol{\theta}, \boldsymbol{\phi}}(\boldsymbol{\pi} \vert \boldsymbol{x})~\vert \vert~p(\boldsymbol{\pi} \vert \boldsymbol{x}) \big )  \Big]\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;\(\alpha_c = \textrm{ReLU} \big ( f_c(\boldsymbol{x}, \boldsymbol{\theta}) \big ) + 1\)&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;No&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;As already pointed out in &lt;a href=&quot;#variational-inference&quot;&gt;Section 7&lt;/a&gt;, the ELBO loss \(\mathcal{L}_{\textrm{VI}}\) and the in-domain loss term in \(\mathcal{L}_{\textrm{RKL-PN}}\) are actually similar. Posterior networks also use a KL-divergence minimization loss \(\mathcal{L}_{\textrm{PostNet}}\) with the specifity of optimizing normalizing flow parameters as well.&lt;/p&gt;
+
+&lt;h3 id=&quot;rightarrow-how-to-induce-such-desired-behavior-when-training-dirichlet-networks&quot;&gt;\(\Rightarrow\) How to induce such desired behavior when training Dirichlet networks?&lt;/h3&gt;
+&lt;p&gt;Going back to our first motivational question, we can distinguish 2 types of approach:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;force explicitely low concentration parameters for out-of-distribution samples&lt;/strong&gt;, either by specifying a uniform target &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019)&lt;/a&gt; or by adding an explicit regularization on logits in the training loss &lt;a class=&quot;citation&quot; href=&quot;#maximize-representation-gap2020&quot;&gt;(Nandy et al., 2020)&lt;/a&gt;;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;incorporate a density modeling to account for out-of-distribution samples during training&lt;/strong&gt;, either implicitely such as in noise contrastive estimation &lt;a class=&quot;citation&quot; href=&quot;#sensoy2020&quot;&gt;(Sensoy et al., 2020)&lt;/a&gt; or explicitely with a density estimator based on normalizing flows &lt;a class=&quot;citation&quot; href=&quot;#postnetworks2020&quot;&gt;(Charpentier et al., 2020)&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Neither &lt;a class=&quot;citation&quot; href=&quot;#sensoy2018&quot;&gt;(Sensoy et al., 2018)&lt;/a&gt;,&lt;a class=&quot;citation&quot; href=&quot;#beingbayesian2020&quot;&gt;(Joo et al., 2020)&lt;/a&gt; or &lt;a class=&quot;citation&quot; href=&quot;#beingbayesian2020&quot;&gt;(Joo et al., 2020)&lt;/a&gt; account for the existence of out-domain samples in their framework. It is unlikely their method will accurately predict a high epistemic uncertainty for this kind of inputs.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;rightarrow-what-measure-should-we-use-for-each-type-of-uncertainty&quot;&gt;\(\Rightarrow\) What measure should we use for each type of uncertainty?&lt;/h3&gt;
+&lt;p&gt;Except the decomposition proposed by &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt; of uncertainty into total, aleatoric and epistemic obtainable via mutual information, there have not been many works on defining a proper uncertainty measure. Many approaches rely simply on MCP or the predictive entropy as their training loss often induce out-of-distribution inputs to have either small logits or high entropy.&lt;/p&gt;
+
+&lt;p&gt;However, in light of the previous decomposition, it theorically does not seems appropriate to use MCP/predictive entropy to measure OOD detection or misclassification detection. Indeed, these metrics corresponds to measuring the total uncertainty while evaluated tasks involve either aleatoric uncertainty or epistemic uncertainty.&lt;/p&gt;
+
+&lt;p&gt;Nevertheless, the correct results reported in papers may be explained as follow. We expect misclassifications to have high aleatoric uncertainty. As correct predictions and misclassifications are both in-domain samples, we may also expect them to have negligible epistemic uncertainty. That implies that a measure of total uncertainty will mostly be influenced by aleatoric uncertainty. Hence, as we do not include OOD samples when evaluating misclassification detection, a measure of total uncertainty will be able to perform correctly. Regarding OOD detection, the number of in-domain misclassifications is often very low due to high predicitive performances. Hence, confusing misclassifications with OOD samples will have a nearly negligible impact on average scores.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol class=&quot;bibliography&quot;&gt;&lt;li&gt;&lt;span id=&quot;murphy2013machine&quot;&gt;K. P. Murphy. (2013). &lt;i&gt;Machine learning : A Probabilistic Perspective&lt;/i&gt;. MIT Press.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;deepensembles2017&quot;&gt;B. Lakshminarayanan, A. Pritzel, &amp;amp; C. Blundell. (2017). Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;mcdropout2016&quot;&gt;Y. Gal, &amp;amp; Z. Ghahramani. (2016). Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning. In &lt;i&gt;Proceedings of the International Conference on Machine Learning&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;malinin2018&quot;&gt;A. Malinin, &amp;amp; M. Gales. (2018). Predictive Uncertainty Estimation via Prior Networks. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;sensoy2018&quot;&gt;M. Sensoy, L. Kaplan, &amp;amp; M. Kandemir. (2018). Evidential Deep Learning to Quantify Classification Uncertainty. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;malinin2019&quot;&gt;A. Malinin, &amp;amp; M. Gales. (2019). Reverse KL-Divergence Training of Prior Networks: Improved Uncertainty and Adversarial Robustness. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;vardir2019&quot;&gt;W. Chen, Y. Shen, W. Wang, &amp;amp; H. Jin. (2019). A Variational Dirichlet Framework for Out-of-Distribution Detection. &lt;i&gt;ArXiv-Preprint&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;sensoy2020&quot;&gt;M. Sensoy, L. Kaplan, F. Cerutti, &amp;amp; M. Saleki. (2020). Uncertainty-Aware Deep Classifiers using Generative Models. In &lt;i&gt;Proceedings of the AAAI Conference on Artificial Intelligence&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;beingbayesian2020&quot;&gt;T. Joo, U. Chung, &amp;amp; M.-G. Seo. (2020). Being Bayesian about Categorical Probability. In &lt;i&gt;Proceedings of the International Conference on Machine Learning&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;maximize-representation-gap2020&quot;&gt;J. Nandy, W. Hsu, &amp;amp; M.-L. Lee. (2020). Towards Maximizing the Representation Gap between In-Domain and Out-of-Distribution Examples. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;postnetworks2020&quot;&gt;B. Charpentier, D. Zügner, &amp;amp; S. Günnemann. (2020). Posterior Network: Uncertainty Estimation without OOD Samples via Density-Based Pseudo-Counts. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;depeweg2018decomposition&quot;&gt;S. Depeweg, J. M. Hernández-Lobato, F. Doshi-Velez, &amp;amp; S. Udluft. (2018). Decomposition of Uncertainty in Bayesian Deep Learning for Efficient and Risk-sensitive Learning. In &lt;i&gt;Proceedings of the International Conference on Machine Learning&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;hendrycks2019oe&quot;&gt;D. Hendrycks, M. Mazeika, &amp;amp; T. Dietterich. (2019). Deep Anomaly Detection with Outlier Exposure. In &lt;i&gt;Proceedings of the International Conference on Learning Representations&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;josan2016sublogic&quot;&gt;A. Josang. (2016). &lt;i&gt;Subjective Logic: A Formalism for Reasoning Under Uncertainty&lt;/i&gt;. Springer.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;dempster2008&quot;&gt;A. P. Dempster. (2008). &lt;i&gt;A Generalization of Bayesian Inference&lt;/i&gt;. Springer.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;implicit2017&quot;&gt;B. Lakshminarayanan, &amp;amp; S. Mohamed. (2017). Learning in Implicit Generative Models. &lt;i&gt;ArXiv-Preprint&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;gutmann2012noise&quot;&gt;M. U. Gutmann, &amp;amp; A. Hyvärinen. (2012). Noise-contrastive estimation of unnormalized statistical models, with applications to natural image statistics. In &lt;i&gt;Journal of Machine Learning Research&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;rezende15&quot;&gt;D. Rezende, &amp;amp; S. Mohamed. (2015). Variational Inference with Normalizing Flows. In &lt;i&gt;Proceedings of the International Conference on Machine Learning&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;&lt;/ol&gt;</content><author><name>Charles Corbière</name><email>charles.corbiere[at]valeo.com</email></author><category term="Dirichlet Networks" /><summary type="html">In the past few years, a variety of Dirichlet-based methods for classification have emerged in the machine learning community. Before going into a detailed review of these approaches, we introduce the Dirichlet-multinomial model, a classic problem in machine learning which will help to better understand the intution behind the method.</summary></entry><entry><title type="html">Decomposition of KL_Pred</title><link href="https://chcorbi.github.io/posts/2020/10/klpred-decompo/" rel="alternate" type="text/html" title="Decomposition of KL_Pred" /><published>2020-10-26T00:00:00-07:00</published><updated>2020-10-26T00:00:00-07:00</updated><id>https://chcorbi.github.io/posts/2020/10/kl-decomposition</id><content type="html" xml:base="https://chcorbi.github.io/posts/2020/10/klpred-decompo/">&lt;h2 id=&quot;notations&quot;&gt;Notations&lt;/h2&gt;
+
+&lt;p&gt;Let us consider a training dataset $\mathcal{D}$ consisting of $N$ &lt;em&gt;i.i.d.&lt;/em&gt; samples,&lt;/p&gt;
+
+\[\begin{equation*} \mathcal{D}= \{ (\boldsymbol{x}_i, y^*_i) \}_{i=1}^N \in (\mathcal{X} \times \mathcal{Y})^N \end{equation*}\]
+
+&lt;p&gt;where $\mathcal{X}$ represents the input space and $\mathcal{Y}={1,\ldots,K}$ is a set of labels. &lt;br /&gt;
+Samples drawn from $\mathcal{D}$ follow an unknown conditional probability distribution $p(\mathbf{y} \vert \mathbf{x})$ where $\mathbf{x}$ and $\mathbf{y}$ are random variables over input space and label space respectively.&lt;/p&gt;
+
+&lt;p&gt;Let $f^{\boldsymbol{\theta}}: \mathcal{X} \rightarrow \mathcal{X’}$ be a neural network (NN) parametrized by $\boldsymbol{\theta}$ where $\mathcal{X’} = \mathbb{R}^K$ is the logit space. We consider categorical probabilities over labels as random variable $\mathbf{z}$.&lt;/p&gt;
+
+&lt;p&gt;Following &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt;, a NN explicitly parametrizes a distribution $p_{\theta}(\mathbf{z} \vert \mathbf{x})$ over categorical probabilities on a simplex. For its conjugate properties with categorical distributions, we chose to model $p_{\theta}(\mathbf{z} \vert \mathbf{x})$ as a Dirichlet distribution whose concentration parameters $\boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\theta}) = \exp (f^{\boldsymbol{\theta}}(\boldsymbol{x}))$ are given by the output of the NN:
+\begin{equation}
+    p_{\theta}(\mathbf{z} \vert \mathbf{x} = \boldsymbol{x}) = \mathrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\theta}) \big )
+    = \frac{\Gamma(\alpha_0 (\boldsymbol{x}, \boldsymbol{\theta}))}{\prod_c \Gamma(\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}))} \prod_{c=1}^K z_j^{\alpha_c(\boldsymbol{x}, \boldsymbol{\theta}) - 1}
+\end{equation}
+where $\Gamma$ is the Gamma function,  $\forall c \in \mathcal{Y}, \alpha_j &amp;gt; 0$ , $\alpha_0 = \sum_c \alpha_c$ and $\sum_c z_c$ = 1 such that $\mathbf{z}$ lives in 
+the $(K-1)$-dimensional unit simplex $\triangle^{K-1}$.&lt;/p&gt;
+
+&lt;h2 id=&quot;textrmkl_textrmpred-criterion&quot;&gt;$\textrm{KL}_{\textrm{Pred}}$ criterion&lt;/h2&gt;
+
+&lt;p&gt;We propose an uncertainty criterion, denoted $\textrm{KL}_{\textrm{Pred}}$, which measures the KL-divergence between NN’s output and a sharp Dirichlet distribution with concentration parameters $\boldsymbol{\gamma}_{\hat{y}}$ focused on the &lt;em&gt;predictive&lt;/em&gt; class $\hat{y}$:&lt;/p&gt;
+
+\[\begin{equation}
+    \textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}^{\hat{y}} \big ) \Big )
+\end{equation}\]
+
+&lt;p&gt;To ensure an accurate estimation of concentration parameters $\boldsymbol{\gamma}^{\hat{y}}$, we compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$:&lt;/p&gt;
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{\hat{y}} = \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f^{\boldsymbol{\hat{\theta}}}(\boldsymbol{x}_i))
+\end{equation*}\]
+
+&lt;p&gt;where $N^{\hat{y}}$ is the number of training samples with label $\hat{y}$.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/klpred_behavior.png&quot; alt=&quot;simplex_behavior&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The lower $\textrm{KL}_{\textrm{Pred}}$ is, the more certain we are in the prediction. Previous figure illustrates the fact that correct predictions will have Dirichlet distributions similar to the computed mean distribution for the predicted class, and thus associated with a low uncertainty measure. Misclassified predictions are expected to present different concentration parameters than the average computed on training set resulting in a higher $\textrm{KL}_{\textrm{Pred}}$ measure. In comparison, &lt;em&gt;differential entropy&lt;/em&gt; is not adequate when it comes to detect misclassifications &lt;a class=&quot;citation&quot; href=&quot;#malinin2018&quot;&gt;(Malinin &amp;amp; Gales, 2018)&lt;/a&gt; as it corresponds to measuring the KL-divergence of the model’s output and the maximum-entropy distribution, which is the uniform distribution on a simplex.&lt;/p&gt;
+
+&lt;h2 id=&quot;decomposition-into-aleatoric-and-epistemic-uncertainty&quot;&gt;Decomposition into aleatoric and epistemic uncertainty&lt;/h2&gt;
+
+&lt;p&gt;We note that $\textrm{KL}_{\textrm{Pred}}$ corresponds to the definition of reverse KL-divergence loss &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019)&lt;/a&gt;. It can be decomposed into the reverse cross-entropy and the negative differential entropy:&lt;/p&gt;
+
+\[\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \underbrace{\mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{\hat{y}} \big ) \Big ]}_\text{Reverse Cross-Entropy} - \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}\]
+
+&lt;p&gt;(Note we ommit the dependence in $\boldsymbol{x}$ and $\boldsymbol{\hat{\theta}}$ in $\boldsymbol{\alpha}(\boldsymbol{x},\boldsymbol{\hat{\theta})}$ for clarity.)&lt;/p&gt;
+
+&lt;p&gt;First, the &lt;em&gt;differential entropy&lt;/em&gt; can be written as the negative KL-divergence between NN’s output and the uniform Dirichlet distribution $\mathcal{U}(1)$:&lt;/p&gt;
+
+\[\begin{equation}
+\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ] = - \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \mathcal{U}(1) ) \Big )
+\end{equation}\]
+
+&lt;p&gt;As stated in &lt;a class=&quot;citation&quot; href=&quot;#malinin2019&quot;&gt;(Malinin &amp;amp; Gales, 2019; Nandy et al., 2020)&lt;/a&gt;, the differential entropy measures the &lt;strong&gt;epistemic uncertainty&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;When considering the reverse cross-entropy (RCE) term:&lt;/p&gt;
+
+\[\begin{align*}
+\textrm{RCE} &amp;amp;= \mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha} \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}^{\hat{y}} \big ) \Big ] \\
+&amp;amp;= - \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_0) + \sum_{c=1}^K \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_c) + \sum_{c=1}^K (\boldsymbol{\gamma}^{\hat{y}}_c - 1) \mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha} \big )} \big [\log(\boldsymbol{z}_c)] \\
+&amp;amp;= \big ( \log \Gamma(K) - \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_0) + \sum_{c=1}^K \log \Gamma(\boldsymbol{\gamma}^{\hat{y}}_c) \big ) + \sum_{c=1}^K (\boldsymbol{\gamma}^{\hat{y}}_c - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_c))
+\end{align*}\]
+
+&lt;p&gt;The first term depends only on the fixed target distribution $\boldsymbol{\gamma}^{\hat{y}}$ while the second term also consider logits values through $\boldsymbol{\alpha}$.&lt;/p&gt;
+
+&lt;h3 id=&quot;case-1-textrmkl_textrmpred&quot;&gt;Case 1: $\textrm{KL}_{\textrm{Pred}}$&lt;/h3&gt;
+
+&lt;p&gt;We compute only the empirical exponential logit mean of the predicted class $\hat{y}$:&lt;/p&gt;
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(1)} = [\boldsymbol{\gamma}_1^{(1)},...,\boldsymbol{\gamma}_K^{(1)}] \quad \quad  \textrm{with}~~ \boldsymbol{\gamma}_c^{(1)}=
+    \begin{cases}
+    \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}_c, &amp;amp;\text{if}\ c=\hat{y} \\
+    1, &amp;amp;\ \text{else.}
+    \end{cases}
+\end{equation*}\]
+
+&lt;p&gt;Hence, we can simplify RCE as:&lt;/p&gt;
+
+\[\begin{equation}
+\textrm{RCE}^{(1)} = \log \Gamma(K) - \log \Gamma(\boldsymbol{\gamma}_{\hat{y}}^{(1)}+K-1) + \log \Gamma(\boldsymbol{\gamma}_{\hat{y}}^{(1)}) + (\boldsymbol{\gamma}_{\hat{y}}^{(1)} - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_{\hat{y}}))
+\end{equation}\]
+
+&lt;p&gt;We obtain the following figures for the decomposition and $\textrm{KL}_{\textrm{Pred}}$ criterion:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/visu_toy_klpred.png&quot; alt=&quot;visu_toy_klpred&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;case-2-textrmkl_textrmpredfull&quot;&gt;Case 2: $\textrm{KL}_{\textrm{PredFull}}$&lt;/h3&gt;
+
+&lt;p&gt;We compute the full empirical vector as defined in the introductive part:&lt;/p&gt;
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(2)} = \frac{1}{N^{\hat{y}}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}
+\end{equation*}\]
+
+&lt;p&gt;(Note that $\boldsymbol{\gamma}_{\hat{y}}^{(2)} = \boldsymbol{\gamma}_{\hat{y}}^{(1)}$.)&lt;/p&gt;
+
+&lt;p&gt;In this case, there is no simplification as done previously. However, we can further decompose:&lt;/p&gt;
+
+\[\begin{equation}
+\textrm{RCE}^{(2)} = \textrm{RCE}^{(1)}  + \Big (- \log \Gamma \big ( \sum_{c \neq \hat{y}} (\boldsymbol{\gamma}_c^{(2)}-1 \big ) + \sum_{c \neq \hat{y}} \big ( \log \Gamma(\boldsymbol{\gamma}_c^{(2)}) + (\boldsymbol{\gamma}_c^{(2)} - 1)(\psi(\boldsymbol{\alpha}_0) - \psi(\boldsymbol{\alpha}_c) \big ) \Big )
+\end{equation}\]
+
+&lt;p&gt;&lt;img src=&quot;/images/visu_toy_klpredfull.png&quot; alt=&quot;visu_toy_klpredfull&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol class=&quot;bibliography&quot;&gt;&lt;li&gt;&lt;span id=&quot;malinin2018&quot;&gt;A. Malinin, &amp;amp; M. Gales. (2018). Predictive Uncertainty Estimation via Prior Networks. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;malinin2019&quot;&gt;A. Malinin, &amp;amp; M. Gales. (2019). Reverse KL-Divergence Training of Prior Networks: Improved Uncertainty and Adversarial Robustness. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span id=&quot;maximize-representation-gap2020&quot;&gt;J. Nandy, W. Hsu, &amp;amp; M.-L. Lee. (2020). Towards Maximizing the Representation Gap between In-Domain and Out-of-Distribution Examples. In &lt;i&gt;Advances in Neural Information Processing Systems&lt;/i&gt;.&lt;/span&gt;&lt;/li&gt;&lt;/ol&gt;</content><author><name>Charles Corbière</name><email>charles.corbiere[at]valeo.com</email></author><category term="Dirichlet Networks" /><summary type="html">Notations</summary></entry></feed>

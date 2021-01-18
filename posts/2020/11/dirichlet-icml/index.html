@@ -1,0 +1,971 @@
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+
+<meta charset="utf-8">
+
+
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Preparation on Dirichlet - ICML 2021 - Charles Corbière’s page</title>
+
+
+
+
+
+
+
+<meta property="og:locale" content="en-US">
+<meta property="og:site_name" content="Charles Corbière's page">
+<meta property="og:title" content="Preparation on Dirichlet - ICML 2021">
+
+
+  <link rel="canonical" href="https://chcorbi.github.io/posts/2020/11/dirichlet-icml/">
+  <meta property="og:url" content="https://chcorbi.github.io/posts/2020/11/dirichlet-icml/">
+
+
+
+  <meta property="og:description" content="Table of contents  Context  Contributions  Thought experiment with Gaussian distributions  Experiments">
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2020-11-26T00:00:00-08:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "Charles Corbière",
+      "url" : "https://chcorbi.github.io",
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="https://chcorbi.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Charles Corbière's page Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://chcorbi.github.io/assets/css/main.css">
+
+<meta http-equiv="cleartype" content="on">
+    
+
+<!-- start custom head snippets -->
+
+<link rel="apple-touch-icon" sizes="57x57" href="https://chcorbi.github.io/images/apple-touch-icon-57x57.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="60x60" href="https://chcorbi.github.io/images/apple-touch-icon-60x60.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="72x72" href="https://chcorbi.github.io/images/apple-touch-icon-72x72.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="76x76" href="https://chcorbi.github.io/images/apple-touch-icon-76x76.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="114x114" href="https://chcorbi.github.io/images/apple-touch-icon-114x114.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="120x120" href="https://chcorbi.github.io/images/apple-touch-icon-120x120.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="144x144" href="https://chcorbi.github.io/images/apple-touch-icon-144x144.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="152x152" href="https://chcorbi.github.io/images/apple-touch-icon-152x152.png?v=M44lzPylqQ">
+<link rel="apple-touch-icon" sizes="180x180" href="https://chcorbi.github.io/images/apple-touch-icon-180x180.png?v=M44lzPylqQ">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/favicon-32x32.png?v=M44lzPylqQ" sizes="32x32">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/android-chrome-192x192.png?v=M44lzPylqQ" sizes="192x192">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/favicon-96x96.png?v=M44lzPylqQ" sizes="96x96">
+<link rel="icon" type="image/png" href="https://chcorbi.github.io/images/favicon-16x16.png?v=M44lzPylqQ" sizes="16x16">
+<link rel="manifest" href="https://chcorbi.github.io/images/manifest.json?v=M44lzPylqQ">
+<link rel="mask-icon" href="https://chcorbi.github.io/images/safari-pinned-tab.svg?v=M44lzPylqQ" color="#000000">
+<link rel="shortcut icon" href="/images/favicon.ico?v=M44lzPylqQ">
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="msapplication-TileImage" content="https://chcorbi.github.io/images/mstile-144x144.png?v=M44lzPylqQ">
+<meta name="msapplication-config" content="https://chcorbi.github.io/images/browserconfig.xml?v=M44lzPylqQ">
+<meta name="theme-color" content="#ffffff">
+<link rel="stylesheet" href="https://chcorbi.github.io/assets/css/academicons.css"/>
+
+<script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "AMS" } } }); </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <button><div class="navicon"></div></button>
+        <ul class="visible-links">
+          <li class="masthead__menu-item masthead__menu-item--lg"><a href="https://chcorbi.github.io/">Charles Corbière's page</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="https://chcorbi.github.io/publications/">Publications</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="https://chcorbi.github.io/teaching/">Teaching</a></li>
+          
+            
+            <li class="masthead__menu-item"><a href="https://chcorbi.github.io/files/cv_corbiere_en.pdf">CV</a></li>
+          
+        </ul>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <div class="sidebar sticky">
+  
+
+
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  <div class="author__avatar">
+    
+    	<img src="https://chcorbi.github.io/images/profile.jpg" class="author__avatar" alt="Charles Corbière">
+    
+  </div>
+
+  <div class="author__content">
+    <h3 class="author__name">Charles Corbière</h3>
+    <p class="author__bio">PhD Student at CNAM / valeo.ai</p>
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li><i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> Paris, France</li>
+      
+      
+      
+      
+        <li><a href="mailto:charles.corbiere[at]valeo.com"><i class="fas fa-fw fa-envelope" aria-hidden="true"></i> Email</a></li>
+      
+      
+       
+      
+      
+      
+      
+        <li><a href="https://www.linkedin.com/in/charles-corbière-6167015b"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> LinkedIn</a></li>
+      
+      
+      
+      
+      
+      
+        <li><a href="https://github.com/chcorbi"><i class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+        <li><a href="https://scholar.google.fr/citations?user=UcnFUZ8AAAAJ&hl=en"><i class="fas fa-fw fa-graduation-cap"></i> Google Scholar</a></li>
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Preparation on Dirichlet - ICML 2021">
+    <meta itemprop="description" content="Table of contents  Context  Contributions  Thought experiment with Gaussian distributions  Experiments">
+    <meta itemprop="datePublished" content="November 26, 2020">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Preparation on Dirichlet - ICML 2021
+</h1>
+          
+            <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+  
+	  12 minute read
+	
+</p>
+          
+        
+        
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Published:</strong> <time datetime="2020-11-26T00:00:00-08:00">November 26, 2020</time></p>
+        
+        
+             
+        
+    
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        <h2 id="table-of-contents">Table of contents</h2>
+<ol>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#contributions">Contributions</a></li>
+  <li><a href="#gaussian">Thought experiment with Gaussian distributions</a></li>
+  <li><a href="#experiments">Experiments</a></li>
+</ol>
+
+<h2 id="context-">Context <a name="context"></a></h2>
+
+<p>Current metrics to measure in-domain and out-domain uncertainty include</p>
+<ul>
+  <li>maximum class probability \(MCP = \max_c p(y=c \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})\)</li>
+  <li>predictive entropy \(\mathcal{H} \big [ p( y \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \big ]\)</li>
+  <li>mutual information \(\mathcal{MI} \Big [y, \boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}} \Big ]\)</li>
+  <li>differential entropy \(\mathcal{H} \big [ p( \boldsymbol{\pi} \vert \boldsymbol{x}, \hat{\boldsymbol{\theta}}) \big ]\)</li>
+  <li>Dirichlet precision \(\alpha_0 = \sum_c \alpha_c\)</li>
+</ul>
+
+<p>In many papers <a class="citation" href="#malinin2018">(Malinin &amp; Gales, 2018)</a>, they consider measures from the expected predictive categorical distribution \(p(y \vert \boldsymbol{x^*}, \mathcal{D})\) as a mesure of <strong>total uncertainty</strong>. This includes MCP and predictive entropy.</p>
+
+<p>Based on <a class="citation" href="#depeweg2018decomposition">(Depeweg et al., 2018)</a>, they decompose the predictive entropy into two terms :</p>
+
+\[\begin{equation}
+\underbrace{\mathcal{H} \Big [ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big ]}_{\text{Total Uncertainty}} = \underbrace{\mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}})} \Big [ \mathcal{H} \big [ p(y \vert \boldsymbol{\pi}) \big] \Big]}_{\text{Expected Aleatoric Uncertainty}} + \underbrace{\mathcal{MI} \Big [y, \boldsymbol{\pi} \vert \boldsymbol{x^*}; \hat{\boldsymbol{\theta}} \Big ]}_{\text{Epistemic Uncertainty}}
+\end{equation}\]
+
+<p>Consequently, mutual information is an epistemic uncertainty measure.</p>
+
+<p style="text-align: center;"><img src="/images/desired_behavior.png" alt="desired_behavior" /></p>
+
+<p>Finally, Dirichlet precision is also expected to be an epistemic uncertainty measure as it measures the dispersion of the Dirichlet distribution on the simplex. The higher the epistemic uncertainty the higher we desire the dispersion to be.</p>
+
+<h2 id="contributions-">Contributions <a name="contributions"></a></h2>
+
+<h3 id="summary">Summary</h3>
+<ul>
+  <li>A new total uncertainty measure for Dirichlet Networks, \(\textrm{KL}_{\textrm{Pred}}\), with properties similar to MCP</li>
+  <li>\(\textrm{KL}_{\textrm{Pred}}\) can be decomposed into two terms which allow to distinguish aleatoric and epistemic uncertianty</li>
+  <li>This new criterion enable to consider an improved version based on the <em>ground-truth</em> class and which improves misclassification detection</li>
+</ul>
+
+<h3 id="a-new-total-uncertainty-measure">A new total uncertainty measure</h3>
+
+<p>In neural network trained to minimize cross-entropy, which is also equivalent to the KL-divergence between model distribution and empirical true distribution:</p>
+
+\[\begin{equation}
+ \mathcal{L}_{\textrm{XE}}(\boldsymbol{x},y^*, \boldsymbol{\theta}) = \textrm{KL} \Big ( \hat{p}(y \vert \boldsymbol{x}) \vert \vert \textrm{Cat}(y \vert \boldsymbol{x}, \boldsymbol{\theta}) \Big ) = - \log p(y=y^* \vert \boldsymbol{x}, \boldsymbol{\theta})
+\end{equation}\]
+
+<p>The standard uncertainty measure is MCP, which is the estimated likelihood \(p(y=\hat{y} \vert \boldsymbol{x^*}, \hat{\boldsymbol{\theta}})\) at sample $\boldsymbol{x^*}$ by the model.</p>
+
+<p>With Dirichlet Networks, training is achieved by minimizing the reverse KL-divergence with a sharp target Dirichlet distribution</p>
+
+\[\begin{equation}
+ \mathcal{L}_{\textrm{RKL}}(\boldsymbol{x},y^*, \boldsymbol{\theta}) = \textrm{KL} \Big ( \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\theta} ) ~\vert \vert~  \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\beta}^{(y^*)}) \Big ) 
+\end{equation}\]
+
+<p>In a similar way than for cross-entropy, we propose an uncertainty criterion, denoted $\textrm{KL}_{\textrm{Pred}}$, which measures the KL-divergence between NN’s output and a sharp Dirichlet distribution with concentration parameters $\boldsymbol{\gamma}_{\hat{y}}$ focused on the <em>predictive</em> class $\hat{y}$:</p>
+
+\[\begin{equation}
+    \textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \textrm{KL} \Big ( \textrm{Dir} (\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\hat{\theta}} ) ~\vert \vert~ \textrm{Dir} ( \boldsymbol{\pi} \vert \boldsymbol{\gamma}^{(\hat{y})} \big ) \Big )
+\end{equation}\]
+
+<p>To ensure an accurate estimation of concentration parameters $\boldsymbol{\gamma}^{(\hat{y})}$, we compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$:</p>
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(\hat{y})} = \frac{1}{N^{(\hat{y})}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f(\boldsymbol{x}_i,\boldsymbol{\hat{\theta}}))
+\end{equation*}\]
+
+<p>where $N^{(\hat{y})}$ is the number of training samples with label $\hat{y}$.</p>
+
+<p><img src="/images/klpred_behavior.png" alt="simplex_behavior" height="700px" width="700px" /></p>
+
+<p>The lower $\textrm{KL}_{\textrm{Pred}}$ is, the more certain we are in the prediction. Previous figure illustrates the fact that correct predictions will have Dirichlet distributions similar to the computed mean distribution for the predicted class, and thus associated with a low uncertainty measure. Misclassified predictions are expected to present different concentration parameters than the average computed on training set resulting in a higher $\textrm{KL}_{\textrm{Pred}}$ measure.</p>
+
+<p><strong>For now, this is just another measure, we don’t have any theoretical explanation whether it is a better to evaluate total uncertainty. Without further justification, it might be as good as MCP or predictive entropy.</strong></p>
+
+<h3 id="decomposition-of-textrmkl_textrmpred">Decomposition of \(\textrm{KL}_{\textrm{Pred}}\)</h3>
+
+<p>Such as done for the reverse KL-divergence loss in <a class="citation" href="#malinin2019">(Malinin &amp; Gales, 2019)</a>, we decompose \(\textrm{KL}_{\textrm{Pred}}\) into the reverse cross-entropy and the negative differential entropy:</p>
+
+\[\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = \underbrace{\mathbb{E}_{p \big ( \boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\hat{\theta}} ) \big )} \Big [- \log \textrm{Dir} \big ( \boldsymbol{\pi}  \vert \boldsymbol{\gamma}_{(\hat{y})} \big ) \Big ]}_\text{Reverse Cross-Entropy} - \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\boldsymbol{\pi} \vert \boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}\]
+
+<p>where we can show that the Reverse Cross-Entropy (RCE) correspond to measuring aleatoric uncertainty and the Differential Entropy measures the dispersion of the Dirichlet distribution, hence epistemic uncertainty.</p>
+
+<p><strong>Still, no justification if it is better than the previous proposed decomposition of predictive entropy in <a class="citation" href="#malinin2018">(Malinin &amp; Gales, 2018)</a>.</strong></p>
+
+<h3 id="improving-misclassification-detection-for-dirichlet-networks">Improving misclassification detection for Dirichlet Networks</h3>
+
+<p>Similarly to ConfidNet, we can improve the evaluation of misclassification detection by considering measure in respect to the <em>ground-truth</em> class.</p>
+
+\[\begin{equation}
+    \textrm{KL}_{\textrm{True}}(\boldsymbol{x}) = \textrm{KL} \Big ( \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big ) ~\vert \vert~ \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{y^*} \big ) \Big )
+\end{equation}\]
+
+<p>where \(\boldsymbol{\gamma}_{y^*}\) corresponds to a Dirichlet distribution whose concentration parameters are the empirical mean of the <em>true</em> class \(y^*\)  of sample \(\boldsymbol{x}\). When evaluated in experiments, \(\textrm{KL}_{\textrm{True}}\) criterion leads to a near-perfect separation of correct and erroneous predictions.</p>
+
+<p>However, the true class of an output is obviously not available when estimating confidence on test samples. We propose to learn \(\textrm{KL}_{\textrm{True}}\) by introducing an auxiliary confidence neural network, termed <em>KLNet</em>, with parameters \(\boldsymbol{\omega}\), which outputs a confidence prediction \(\hat{c}(\boldsymbol{x}, \boldsymbol{\omega})\).</p>
+
+<p><strong>Now we can justify than <em>KLNet</em> improves total uncertainty by better evaluating aleatoric uncertainty. Nevertheless, we have no guarantees about epistemic uncertainty. Plus, current KLNet training doesn’t take into account OOD samples.</strong></p>
+
+<h2 id="thought-experiment-with-gaussian-distributions-">Thought experiment with Gaussian distributions <a name="gaussian"></a></h2>
+
+<p>Let’s suppose the random variable over categorical probabilities $\boldsymbol{\pi} =[\pi_1,…,\pi_C]$ is now parametrize as a $K$-multivariate Gaussian distribution:</p>
+
+\[\begin{equation}
+	p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) = \mathcal{N}(\boldsymbol{\pi} \vert \boldsymbol{\mu_1}, \boldsymbol{\Sigma_1})
+\end{equation}\]
+
+<p>For instance, an output of a neural network could be $\boldsymbol{\mu_1} = [0.98, 0.01, .01]$ and $\boldsymbol{\Sigma_1}$ = [0.05, 0.03, 0.02].</p>
+
+<blockquote>
+  <p>On a related matter, <a class="citation" href="#kendall2017">(Kendall &amp; Gal, 2017)</a> propose in classification to consider a Gaussian over $\boldsymbol{\pi} \vert \boldsymbol{w}$ and parametrized by a NN outputing logits $f(\boldsymbol{x}, \boldsymbol{w})$ (e.g  $[98.1, 1.2, 1.3]$) and a scalar $\boldsymbol{\sigma}$ (e.g $[2.1,0.6,3.3]$). Mean probabilities corresponds to the softmax of the mean corrupted by Gaussian noise:</p>
+
+\[\begin{equation}
+	\boldsymbol{\hat{\pi}}_t = \mathrm{Softmax}(\boldsymbol{\pi}_t)~~~~\mathrm{with }~ \boldsymbol{\pi}_t = f(\boldsymbol{x}, \boldsymbol{w}) +\boldsymbol{\sigma}\epsilon_t,~~~\epsilon_t \sim \mathcal{N}(0,I)
+\end{equation}\]
+</blockquote>
+
+<p>On the simplex, the distribution can be represented with $\boldsymbol{\mu_1}$ as its center position and dispersion corresponds to $\boldsymbol{\Sigma_1}$.
+Predictions are based on the argmax of the mean parameter, which is the first moment of the distribution:</p>
+
+\[\begin{equation}
+\hat{y} = arg\,max_{c}~ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})}[y] = arg\,max_{c}~ \boldsymbol{\mu_1}
+\end{equation}\]
+
+<p>In this case, <strong>the entropy corresponds to computing the entropy on the mean of the distribution</strong>: $\mathcal{H} \big [ \mathbb{E}_{p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})}[y] \big ]$.</p>
+
+<p>To reflect epistemic uncertainty, we should also consider the second moment of the distribution $\boldsymbol{\Sigma_1}$. For instance, the higher $\boldsymbol{\Sigma_1}[\hat{y}]$ is, the higher would be the epistemic uncertainty.</p>
+
+<p>In order to consider both aleatoric and epistemic uncertainty, we could try to derive some statistics on $p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D})$. Given a target distribution $p(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2}) = \mathcal{N}(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2})$ also Gaussian, the <strong>KL-divergence</strong> between the two distributions is:</p>
+
+\[\begin{align}
+\mathrm{KL} \big [ p(\boldsymbol{\pi} \vert \boldsymbol{x^*}, \mathcal{D}) \vert \vert p(\boldsymbol{\pi} \vert \boldsymbol{\mu_2}, \boldsymbol{\Sigma_2})] = \frac{1}{2} \Big (\log \vert\boldsymbol{\Sigma_2}\vert - &amp;\log \vert\boldsymbol{\Sigma_1}\vert - K + tr( \boldsymbol{\Sigma_2}^{-1} \boldsymbol{\Sigma_1}) \\ \nonumber
+ &amp;+ (\boldsymbol{\mu_2} - \boldsymbol{\mu_1})\boldsymbol{\Sigma_2}^{-1}(\boldsymbol{\mu_2}-\boldsymbol{\mu_1}) \Big ) 
+\end{align}\]
+
+<p>Setting aside the terms which do not depend on the input, we can identity two term. The first one relates to the first moment of the distribution, $(\boldsymbol{\mu_2}-\boldsymbol{\mu_1})\boldsymbol{\Sigma_2}^{-1}(\boldsymbol{\mu_2}-\boldsymbol{\mu_1})$ and the second one involves only the variance $- \log \vert\boldsymbol{\Sigma_1}\vert + tr( \boldsymbol{\Sigma_2}^{-1} \boldsymbol{\Sigma_1})$.</p>
+
+<h2 id="empirical-experiments-">Empirical Experiments <a name="experiments"></a></h2>
+
+<p>Two models were trained:</p>
+<ul>
+  <li>with standard cross-entropy (<strong>XE</strong>)</li>
+  <li>with contrastive reverse KL-divergence (<strong>Dirichlet</strong>)</li>
+</ul>
+
+<h3 id="cifar-10">CIFAR-10</h3>
+
+<ul>
+  <li>In-distribution dataset: CIFAR-10</li>
+  <li>Out-distribution training dataset: CIFAR-100</li>
+  <li>Network Architecture: VGG-16</li>
+  <li>Concentrations parameters $\alpha= \exp{f(x, \theta)}$</li>
+  <li>Target concentrations for in-domain: \(\beta_{\text{in}}\) = 10</li>
+  <li>Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs</li>
+</ul>
+
+<p>Accuracy is 93.5% for XE model and 92.9% for Dirichlet model.</p>
+
+<p>Presented results are for <strong>TinyImageNet</strong> as OOD dataset (% AUC), $\beta=100$ for standard Dirichlet models and $\beta=10$ for contrastive Dirichlet models</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Training</th>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+      <th style="text-align: right">Mis.+OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><strong>Standard-XE</strong></td>
+      <td style="text-align: left">MCP<br />ODIN<br />Mahalanobis<br />ConfidNet</td>
+      <td style="text-align: right">$92.6\%$<br />$91.4\%$<br />$88.9\%$<br />$\boldsymbol{92.6\%}$</td>
+      <td style="text-align: right">$87.5\%$<br />$\boldsymbol{89.1\%}$<br />$83.0\%$<br />$87.8\%$</td>
+      <td style="text-align: right">$90.5\%$<br />$\boldsymbol{91.5\%}$<br />$85.7\%$<br />$91.6\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><strong>Standard-Dirichlet</strong></td>
+      <td style="text-align: left">MCP<br />ODIN<br />Mahalanobis<br />Mutual Information<br />ConfidNet<br />$\textrm{KL}_{\textrm{Pred}}$ (Ours) <br /><strong>KLNet (Ours)</strong></td>
+      <td style="text-align: right">$82.0\%$<br />$81.1\%$<br />$\boldsymbol{91.9\%}$<br />$74.0\%$<br />$.\%$<br />$91.4\%$<br />$91.3\%$</td>
+      <td style="text-align: right">$72.3\%$<br />$71.5\%$<br />$\boldsymbol{86.9\%}$<br />$66.0\%$<br />$.\%$<br />$84.3\%$<br />$84.1\%$</td>
+      <td style="text-align: right">$74.8\%$<br />$73.9\%$<br />$\boldsymbol{89.6\%}$<br />$67.8\%$<br />$.\%$<br />$87.5\%$<br />$87.4\%$</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Training</th>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+      <th style="text-align: right">Mis.+OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><strong>Contrastive-XE</strong></td>
+      <td style="text-align: left">MCP<br />ODIN<br />ConfidNet</td>
+      <td style="text-align: right">$92.5\%$<br />$92.0\%$<br />$92.7\%$</td>
+      <td style="text-align: right">$\boldsymbol{94.0\%}$<br />$94.1\%$<br />$94.1\%$</td>
+      <td style="text-align: right">$\boldsymbol{95.4\%}$<br />$95.4\%$<br />$95.5\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><strong>Contrastive-Dirichlet</strong></td>
+      <td style="text-align: left">MCP<br />ODIN<br />Mutual Information<br />Mahalanobis<br />ConfidNet<br />$\textrm{KL}_{\textrm{Pred}}$ (Ours) <br /><strong>KLNet (Ours)</strong></td>
+      <td style="text-align: right">$92.1\%$<br />$92.1\%$<br />$91.9\%$<br />$91.4\%$<br />$92.8\%$<br />$92.1\%$<br />$\boldsymbol{93.2\%}$</td>
+      <td style="text-align: right">$93.2\%$<br />$93.2\%$<br />$93.2\%$<br />$83.3\%$<br />$93.6\%$<br />$93.2\%$<br />$\boldsymbol{93.6\%}$</td>
+      <td style="text-align: right">$94.9\%$<br />$94.9\%$<br />$94.8\%$<br />$95.1\%$<br />$95.2\%$<br />$94.9\%$<br />$\boldsymbol{95.3\%}$</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="effect-of-the-computed-mean-gammahaty">Effect of the computed mean \(\gamma^{(\hat{y})}\)</h5>
+
+<p>We have three cases about how to compute the target distribution in the criterion  $\textrm{KL}_{\textrm{Pred}}$</p>
+
+<ul>
+  <li><strong>KL_Original</strong>: Take exactly the target distribution use in training:</li>
+</ul>
+
+\[\begin{equation*}
+ \gamma^{(0, \hat{y})} = \big [ 1,..., \beta_{\text{in}},...,1 \big ]
+\end{equation*}\]
+
+<ul>
+  <li><strong>KL_Full</strong>: Compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$ and use <strong>all values</strong>:</li>
+</ul>
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(1, \hat{y})} = \frac{1}{N^{(\hat{y})}} \sum_{i: y_i=\hat{y}}^N \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}), \quad \quad  \textrm{with}~~ \boldsymbol{\alpha}(\boldsymbol{x_i}, \boldsymbol{\hat{\theta}}) = \exp (f(\boldsymbol{x}_i,\boldsymbol{\hat{\theta}}))
+\end{equation*}\]
+
+<p>where $N^{(\hat{y})}$ is the number of training samples with label $\hat{y}$.</p>
+
+<ul>
+  <li><strong>KL_Pred</strong>: Compute the empirical exponential logits mean of the predicted class $\hat{y}$ on training set $\mathcal{D}$ and use <strong>only the $\hat{y}$-value</strong>:</li>
+</ul>
+
+\[\begin{equation*}
+    \boldsymbol{\gamma}^{(2, \hat{y})} = \big [ 1,..., \boldsymbol{\gamma}^{(1, \hat{y})}[\hat{y}],...,1 \big ]
+\end{equation*}\]
+
+<p>Results using the Dirichlet model trained with \(\beta_{\text{in}}=10\) are available in the table below:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+      <th style="text-align: right">Mis.+OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">KL_Original</td>
+      <td style="text-align: right">$92.6\%$</td>
+      <td style="text-align: right">$93.0\%$</td>
+      <td style="text-align: right">$93.7\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">KL_Pred</td>
+      <td style="text-align: right">$92.5\%$</td>
+      <td style="text-align: right">$93.2\%$</td>
+      <td style="text-align: right">$92.8\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">KL_Full</td>
+      <td style="text-align: right">$92.2\%$</td>
+      <td style="text-align: right">$93.2\%$</td>
+      <td style="text-align: right">$93.6\%$</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Actually, I observe that using more complicated form of target distribution do not impact performance.</p>
+
+<h5 id="effect-of-beta_textin">Effect of \(\beta_{\text{in}}\)</h5>
+
+<p>We vary the chosen value for in-domain target concentrations \(\beta_{\text{in}}\) from 10 to 10,000. Below are the results for the criterion KL_Original:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">\(\beta_{\text{in}}\)</th>
+      <th style="text-align: right">Accuracy</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+      <th style="text-align: right">Mis.+OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">10</td>
+      <td style="text-align: right">$92.9\%$</td>
+      <td style="text-align: right">$92.6\%$</td>
+      <td style="text-align: right">$93.0\%$</td>
+      <td style="text-align: right">$93.7\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">100</td>
+      <td style="text-align: right">$93.0\%$</td>
+      <td style="text-align: right">$91.7\%$</td>
+      <td style="text-align: right">$92.2\%$</td>
+      <td style="text-align: right">$92.8\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1000</td>
+      <td style="text-align: right">$93.5\%$</td>
+      <td style="text-align: right">$90.2\%$</td>
+      <td style="text-align: right">$90.3\%$</td>
+      <td style="text-align: right">$91.1\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">10000</td>
+      <td style="text-align: right">$92.6\%$</td>
+      <td style="text-align: right">$88.5\%$</td>
+      <td style="text-align: right">$88.1\%$</td>
+      <td style="text-align: right">$89.3\%$</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>We also note that the lower \(\beta_{\text{in}}\) is, the less confident in-domain softmax probabilities will be. For instance, in the case of \(\beta_{\text{in}}=10\), they range from $0.1$ to $0.57$.</p>
+
+<blockquote>
+  <p>When \(\beta_{\text{in}} \geq 100\), KL_Original becomes worse compared to KL_Pred or KL_Full. This may be due to the fact that logits variation are important, making them deviate from the original target distribution.</p>
+</blockquote>
+
+<h5 id="empirical-evaluation-of-the-decomposed-measures">Empirical evaluation of the decomposed measures</h5>
+
+<p>The criterion $\textrm{KL}_{\textrm{Pred}}$ actually correspond to the negative reverse KL-divergence used in training. Hence, it can be decomposed into the reverse cross-entropy and the differential entropy:</p>
+
+\[\begin{equation}
+\textrm{KL}_{\textrm{Pred}}(\boldsymbol{x}) = - \underbrace{\mathbb{E}_{p \big ( \mathbf{z} \vert \boldsymbol{\alpha}(\boldsymbol{x}, \boldsymbol{\hat{\theta}}) \big )} \Big [- \log \textrm{Dir} \big ( \mathbf{z} \vert \boldsymbol{\gamma}_{\hat{y}} \big ) \Big ]}_\text{Reverse Cross-Entropy} + \underbrace{\mathcal{H} \Big [ \textrm{Dir} \big (\mathbf{z} \vert \boldsymbol{\alpha}) \big )  \Big ]}_\text{Differential Entropy}
+\end{equation}\]
+
+<p>In the synthetic experiment, we observe that the differential entropy correlates with the <strong>epistemic uncertainty</strong> and the reverse cross-entropy (RCE) correlates with the <strong>aleatoric uncertainty</strong>.</p>
+
+<p>We use those decomposed metric here to evaluate their effectiveness on misclassification detection and OOD detection in the following table.
+(Experiment done using the Dirichlet model trained with \(\beta_{\text{in}}=10\))</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">RCE</td>
+      <td style="text-align: right">$91.3\%$</td>
+      <td style="text-align: right">$92.8\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Diff. Ent.</td>
+      <td style="text-align: right">$91.2\%$</td>
+      <td style="text-align: right">$92.8\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">KL_Original</td>
+      <td style="text-align: right">$92.6\%$</td>
+      <td style="text-align: right">$93.0\%$</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It doesn’t seem RCE or differential entropy are more inclined to measure one type of uncertainty. Only thing we can conlude is that combine them into KL_Original improves performances.</p>
+
+<h5 id="ablation-study">Ablation study</h5>
+
+<p>As observed in our Neurips submission, KLNet mainly improves misclassification detection, with a slight but uncontrolled benefit on OOD detection:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+      <th style="text-align: right">Mis.+OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">KL_Original</td>
+      <td style="text-align: right">$92.6\%$</td>
+      <td style="text-align: right">$93.0\%$</td>
+      <td style="text-align: right">$93.7\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">KLNet_Classic</td>
+      <td style="text-align: right">$93.0\%$</td>
+      <td style="text-align: right">$93.3\%$</td>
+      <td style="text-align: right">$94.0\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">KLNet_Cloning</td>
+      <td style="text-align: right">$93.7\%$</td>
+      <td style="text-align: right">$93.3\%$</td>
+      <td style="text-align: right">$94.5\%$</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="cifar-100">CIFAR-100</h3>
+
+<ul>
+  <li>In-distribution dataset: CIFAR-100</li>
+  <li>Out-distribution training dataset: CIFAR-10</li>
+  <li>Network Architecture: VGG-16</li>
+  <li>Concentrations parameters $\alpha= \exp{f(x, \theta)}$</li>
+  <li>Target concentrations for in-domain: \(\beta_{\text{in}}\) = 10</li>
+  <li>Training details: Adam, LR 5e-5, 1-cyclic scheduler for 45 epochs</li>
+</ul>
+
+<p>Accuracy is 73.2% for XE model and 71.5% for Dirichlet model.</p>
+
+<p>Presented results are for <strong>TinyImageNet</strong> as OOD dataset (% AUC)</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Training</th>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: right">Mis. Detection</th>
+      <th style="text-align: right">OOD Detection</th>
+      <th style="text-align: right">Mis.+OOD Detection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><strong>XE</strong></td>
+      <td style="text-align: left">MCP<br />ODIN<br />Mahalanobis<br /></td>
+      <td style="text-align: right">$86.6\%$<br />$84.9\%$<br />$80.9\%$</td>
+      <td style="text-align: right">$75.9\%$<br />$77.4\%$<br />$73.3\%$</td>
+      <td style="text-align: right">$86.0\%$<br />$85.4\%$<br />$81.3\%$</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><strong>Dirichlet</strong></td>
+      <td style="text-align: left">MCP<br />ODIN<br />Mutual Information<br />Mahalanobis<br /><strong>KL_Original</strong><br /><strong>KLNet</strong><br /><strong>KLNet_Cloning</strong></td>
+      <td style="text-align: right">$83.7\%$<br />$83.7\%$<br />$82.8\%$<br />$83.4\%$<br />$87.3\%$<br />$86.8\%$<br />$\boldsymbol{87.6\%}$</td>
+      <td style="text-align: right">$76.0\%$<br />$76.0\%$<br />$76.0\%$<br />$71.9\%$<br />$77.0\%$<br />$76.9\%$<br />$\boldsymbol{77.8\%}$</td>
+      <td style="text-align: right">$84.3\%$<br />$84.3\%$<br />$83.8\%$<br />$82.9\%$<br />$87.3\%$<br />$86.8\%$<br />$\boldsymbol{87.8\%}$</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>Training details</p>
+  <ul>
+    <li>on CIFAR-10, KLNet training without weight decay, then add it on second cloning phase and disable data augmentation</li>
+    <li>same for ConfidNet on CIFAR-10</li>
+  </ul>
+</blockquote>
+
+<h2 id="references">References</h2>
+
+<ol class="bibliography"><li><span id="malinin2018">A. Malinin, &amp; M. Gales. (2018). Predictive Uncertainty Estimation via Prior Networks. In <i>Advances in Neural Information Processing Systems</i>.</span></li>
+<li><span id="depeweg2018decomposition">S. Depeweg, J. M. Hernández-Lobato, F. Doshi-Velez, &amp; S. Udluft. (2018). Decomposition of Uncertainty in Bayesian Deep Learning for Efficient and Risk-sensitive Learning. In <i>Proceedings of the International Conference on Machine Learning</i>.</span></li>
+<li><span id="malinin2019">A. Malinin, &amp; M. Gales. (2019). Reverse KL-Divergence Training of Prior Networks: Improved Uncertainty and Adversarial Robustness. In <i>Advances in Neural Information Processing Systems</i>.</span></li>
+<li><span id="kendall2017">A. Kendall, &amp; Y. Gal. (2017). What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision? <i>Advances in Neural Information Processing Systems</i>.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fa fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="https://chcorbi.github.io/tags/#dirichlet-networks" class="page__taxonomy-item" rel="tag">Dirichlet Networks</a>
+    
+    </span>
+  </p>
+
+
+
+
+      </footer>
+
+      
+
+<section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=https://chcorbi.github.io/posts/2020/11/dirichlet-icml/" class="btn btn--twitter" title="Share on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https://chcorbi.github.io/posts/2020/11/dirichlet-icml/" class="btn btn--facebook" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://chcorbi.github.io/posts/2020/11/dirichlet-icml/" class="btn btn--linkedin" title="Share on LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+      
+
+
+  <nav class="pagination">
+    
+      <a href="https://chcorbi.github.io/posts/2020/11/dirichlet-networks/" class="pagination--pager" title="A Survey on Dirichlet Neural Networks
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      
+        <h4 class="page__related-title">You May Also Enjoy</h4>
+      
+      <div class="grid__wrapper">
+        
+          
+
+
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="https://chcorbi.github.io/posts/2020/11/dirichlet-networks/" rel="permalink">A Survey on Dirichlet Neural Networks
+</a>
+      
+    </h2>
+    
+    
+      <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+  
+	  38 minute read
+	
+</p>
+    
+
+        
+         <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Published:</strong> <time datetime="2020-11-12T00:00:00-08:00">November 12, 2020</time></p>
+        
+
+    
+    <p class="archive__item-excerpt" itemprop="description"><p>In the past few years, a variety of Dirichlet-based methods for classification have emerged in the machine learning community. Before going into a detailed review of these approaches, we introduce the Dirichlet-multinomial model, a classic problem in machine learning which will help to better understand the intution behind the method.</p>
+
+</p>
+    
+    
+    
+
+  </article>
+</div>
+
+        
+          
+
+
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="https://chcorbi.github.io/posts/2020/10/klpred-decompo/" rel="permalink">Decomposition of KL_Pred
+</a>
+      
+    </h2>
+    
+    
+      <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+  
+	  5 minute read
+	
+</p>
+    
+
+        
+         <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Published:</strong> <time datetime="2020-10-26T00:00:00-07:00">October 26, 2020</time></p>
+        
+
+    
+    <p class="archive__item-excerpt" itemprop="description"><h2 id="notations">Notations</h2>
+
+</p>
+    
+    
+    
+
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+</div>
+
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+<a href="/sitemap/">Sitemap</a>
+<!-- end custom footer snippets -->
+
+        
+
+<div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="http://github.com/chcorbi"><i class="fab fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    <li><a href="https://chcorbi.github.io/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 Charles Corbière. Powered by <a href="http://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://github.com/academicpages/academicpages.github.io">AcademicPages</a>, a fork of <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    <script src="https://chcorbi.github.io/assets/js/main.min.js"></script>
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-147067893-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+  </body>
+</html>
+
