@@ -1,115 +1,94 @@
----
----
-
-@string{aps = {American Physical Society,}}
-
-@book{einstein1920relativity,
-  title={Relativity: the Special and General Theory},
-  author={Einstein, Albert},
-  year={1920},
-  publisher={Methuen & Co Ltd},
-  html={relativity.html}
+@misc{DrivingVQA,
+   title = {DrivingVQA: Benchmarking Visual Chain-of-Thought Reasoning with Driving Theory Tests},
+   author = {Charles Corbière* and Simon Roburin* and Syrielle Montariol* and Antoine Bosselut and Alexandre Alahi},
+   note = {Under submission at CVPR 2025},
+   selected={true},
+   year = {2024},
+   abstract = {Modern Vision-Language Models (VLMs) equip Large Language Models with image understanding, enabling multimodal reasoning.
+   Due to the domain gap between vision and textual data, these systems often face significant challenges: an over-reliance on text priors, hallucinations, and difficulty with complex visual reasoning.
+While recent research efforts attempt to study VLMs' ability to perform visual reasoning, existing benchmarks typically rely on synthetic images with human explanations or real-world images paired with generated explanations.
+To pave the way towards complex visual reasoning in real-world scenarios, we introduce DrivingVQA, a new benchmark based on driving theory tests. It offers approximately 4K expert-crafted multiple-choice questions along with multi-modal explanations centered on relevant entities crucial to the reasoning process.
+Through extensive experimentation, we explore diverse strategies to effectively leverage relevant entities to enhance visual reasoning and identify a bottleneck in handling localization information in current VLMs architecture.},
+   preview = {paper_drivingvqa.png}
 }
 
-@book{einstein1956investigations,
-  bibtex_show={true},
-  title={Investigations on the Theory of the Brownian Movement},
-  author={Einstein, Albert},
-  year={1956},
-  publisher={Courier Corporation},
-  preview={brownian-motion.gif}
+@misc{zayene2024helvipad,
+      title={Helvipad: A Real-World Dataset for Omnidirectional Stereo Depth Estimation}, 
+      author={Mehdi Zayene and Jannik Endres and Albias Havolli and Charles Corbière and Salim Cherkaoui and Alexandre Kontouli and Alexandre Alahi},
+      year={2024},
+     note = {Under submission at CVPR 2025},
+     arxiv={2411.18335},
+     selected={true},
+     website = {https://vita-epfl.github.io/Helvipad},
+     pdf={https://arxiv.org/pdf/2411.18335.pdf},
+     bibtex_show={true},
+     abstract = {Despite considerable progress in stereo depth estimation, omnidirectional imaging remains underexplored, mainly due to the lack of appropriate data. We introduce HELVIPAD, a real-world dataset for omnidirectional stereo depth estimation, consisting of 40K frames from video sequences across diverse environments, including crowded indoor and outdoor scenes with diverse lighting conditions. Collected using two 360° cameras in a top-bottom setup and a LiDAR sensor, the dataset includes accurate depth and disparity labels by projecting 3D point clouds onto equirectangular images. Additionally, we provide an augmented training set with a significantly increased label density by using depth completion. We benchmark leading stereo depth estimation models for both standard and omnidirectional images. The results show that while recent stereo methods perform decently, a significant challenge persists in accurately estimating depth in omnidirectional imaging. To address this, we introduce necessary adaptations to stereo models, achieving improved performance.},
+     preview = {paper_helvipad.gif},
 }
 
-@article{einstein1950meaning,
-  abbr={AJP},
-  bibtex_show={true},
-  title={The meaning of relativity},
-  author={Einstein, Albert and Taub, AH},
-  journal={American Journal of Physics},
-  volume={18},
-  number={6},
-  pages={403--404},
-  year={1950},
-  publisher={American Association of Physics Teachers}
+@inproceedings{roburinECCV2022,
+   title = {Take One Gram of Neural Features, Get Enhanced Group Robustness},
+   author = {Roburin*, Simon and Charles Corbière* and Puy, Gilles and Thome, Nicolas and Aubry, Mathieu and Marlet, Renaud and P\'{e}rez, Patrick},
+   booktitle = {ECCV Workshop on Out-Of-Distribution Generalization in Computer Vision},
+   year = {2022},
+   arxiv = {2208.12625},
+   pdf = {https://arxiv.org/pdf/2208.12625.pdf},
+   abstract = {Predictive performance of machine learning models trained with empirical risk minimization (ERM) can degrade considerably under distribution shifts. In particular, the presence of spurious correlations in training datasets leads ERM-trained models to display high loss when evaluated on minority groups not presenting such correlations in test sets. Extensive attempts have been made to develop methods improving worst-group robustness. However, they require group information for each training input or at least, a validation set with group labels to tune their hyperparameters, which may be expensive to get or unknown a priori. In this paper, we address the challenge of improving group robustness without group annotations during training. To this end, we propose to partition automatically the training dataset into groups based on Gram matrices of features extracted from an identification model and to apply robust optimization based on these pseudo-groups. In the realistic context where no group labels are available, our experiments show that our approach not only improves group robustness over ERM but also outperforms all recent baselines.},
+   preview = {paper_gramclust.png},
+   bibtex_show={true},
+   selected={true},
 }
 
-@article{PhysRev.47.777,
-  abbr={PhysRev},
-  title={Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?},
-  author={Einstein*†, A. and Podolsky*, B. and Rosen*, N.},
-  abstract={In a complete theory there is an element corresponding to each element of reality. A sufficient condition for the reality of a physical quantity is the possibility of predicting it with certainty, without disturbing the system. In quantum mechanics in the case of two physical quantities described by non-commuting operators, the knowledge of one precludes the knowledge of the other. Then either (1) the description of reality given by the wave function in quantum mechanics is not complete or (2) these two quantities cannot have simultaneous reality. Consideration of the problem of making predictions concerning a system on the basis of measurements made on another system that had previously interacted with it leads to the result that if (1) is false then (2) is also false. One is thus led to conclude that the description of reality as given by a wave function is not complete.},
-  journal={Phys. Rev.},
-  location={New Jersey},
-  volume={47},
-  issue={10},
-  pages={777--780},
-  numpages={0},
-  year={1935},
-  month={May},
-  publisher=aps,
-  doi={10.1103/PhysRev.47.777},
-  url={http://link.aps.org/doi/10.1103/PhysRev.47.777},
-  html={https://journals.aps.org/pr/abstract/10.1103/PhysRev.47.777},
-  pdf={example_pdf.pdf},
-  altmetric={248277},
-  dimensions={true},
-  google_scholar_id={qyhmnyLat1gC},
-  video={https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ},
-  additional_info={. *More Information* can be [found here](https://github.com/alshedivat/al-folio/)},
-  annotation={* Example use of superscripts<br>† Albert Einstein},
+@inproceedings{corbiereUDL2021,
+   title = {Beyond First-Order Uncertainty Estimation with Evidential Models for Open-World Recognition},
+   author = {Charles Corbière and Lafon, Marc and Thome, Nicolas and Cord, Matthieu and P\'{e}rez, Patrick},
+   booktitle = {ICML Workshop on Uncertainty and Robustness in Deep Learning},
+   year = {2021},
+   pdf = {http://www.gatsby.ucl.ac.uk/\~{}balaji/udl2021/accepted-papers/UDL2021-paper-062.pdf},
+   abstract = {In this paper, we tackle the challenge of jointly quantifying in-distribution and out-of-distribution (OOD) uncertainties. We introduce KLoS, a KL-divergence measure defined on the class-probability simplex. By leveraging the second-order uncertainty representation provided by evidential models, KLoS captures more than existing first-order uncertainty measures such as predictive entropy. We design an auxiliary neural network, KLoSNet, to learn a refined measure directly aligned with the evidential training objective. Experiments show that KLoSNet acts as a class-wise density estimator and outperforms current uncertainty measures in the realistic context where no OOD data is available during training. We also report comparisons in the presence of OOD training samples, which shed a new light on the impact of the vicinity of this data with OOD test data.},
+   preview = {paper_beyond.png},
+   selected={true},
+   bibtex_show={true},
+}
+
+@inproceedings{corbiere2020,
+  title={Confidence Estimation via Auxiliary Models},
+  author={Charles Corbière and Thome, Nicolas and Saporta, Antoine and Vu, Tuan-HUng and Cord, Mathieu and P{\'e}rez, Patrick},
+  year={2021},
+  booktitle = {T-PAMI},
+  arxiv = {2012.06508},
+  pdf = {https://arxiv.org/pdf/2012.06508.pdf},
+  preview = {paper_auxiliary.png},
+  abstract = {Reliably quantifying the confidence of deep neural classifiers is a challenging yet fundamental requirement for deploying such models in safety-critical applications. In this paper, we introduce a novel target criterion for model confidence, namely the true class probability (TCP). We show that TCP offers better properties for confidence estimation than standard maximum class probability (MCP). Since the true class is by essence unknown at test time, we propose to learn TCP criterion from data with an auxiliary model, introducing a specific learning scheme adapted to this context. We evaluate our approach on the task of failure prediction and of self-training with pseudo-labels for domain adaptation, which both necessitate effective confidence estimates. Extensive experiments are conducted for validating the relevance of the proposed approach in each task. We study various network architectures and experiment with small and large datasets for image classification and semantic segmentation. In every tested benchmark, our approach outperforms strong baselines.},
   selected={true},
-  inspirehep_id = {3255}
-}
-
-@article{einstein1905molekularkinetischen,
-  title={{\"U}ber die von der molekularkinetischen Theorie der W{\"a}rme geforderte Bewegung von in ruhenden Fl{\"u}ssigkeiten suspendierten Teilchen},
-  author={Einstein, A.},
-  journal={Annalen der physik},
-  volume={322},
-  number={8},
-  pages={549--560},
-  year={1905},
-  publisher={Wiley Online Library}
-}
-
-@article{einstein1905movement,
-  abbr={Ann. Phys.},
-  title={Un the movement of small particles suspended in statiunary liquids required by the molecular-kinetic theory 0f heat},
-  author={Einstein, A.},
-  journal={Ann. Phys.},
-  volume={17},
-  pages={549--560},
-  year={1905}
-}
-
-@article{einstein1905electrodynamics,
-  title={On the electrodynamics of moving bodies},
-  author={Einstein, A.},
-  year={1905}
-}
-
-@Article{einstein1905photoelectriceffect,
   bibtex_show={true},
-  abbr={Ann. Phys.},
-  title="{{\"U}ber einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt}",
-  author={Albert Einstein},
-  abstract={This is the abstract text.},
-  journal={Ann. Phys.},
-  volume={322},
-  number={6},
-  pages={132--148},
-  year={1905},
-  doi={10.1002/andp.19053220607},
-  award={Albert Einstein receveid the **Nobel Prize in Physics** 1921 *for his services to Theoretical Physics, and especially for his discovery of the law of the photoelectric effect*},
-  award_name={Nobel Prize}
 }
 
-@book{przibram1967letters,
-  bibtex_show={true},
-  title={Letters on wave mechanics},
-  author={Einstein, Albert and Schrödinger, Erwin and Planck, Max and Lorentz, Hendrik Antoon and Przibram, Karl},
-  year={1967},
-  publisher={Vision},
-  preview={wave-mechanics.gif},
-  abbr={Vision}
+@inproceedings{NIPS2019_8556,
+   title = {Addressing Failure Prediction by Learning Model Confidence},
+   author = {Charles Corbière and Thome, Nicolas and Bar-Hen, Avner and Cord, Matthieu and P\'{e}rez, Patrick},
+   booktitle = {NeurIPS},
+   pages = {2902--2913},
+   year = {2019},
+   arxiv = {1906.04508},
+   pdf = {http://papers.nips.cc/paper/8556-addressing-failure-prediction-by-learning-model-confidence.pdf},
+   code = {https://github.com/valeoai/ConfidNet},
+   poster = {posterNeurIPS2019-AddFailPred.pdf},
+   abstract = {Assessing reliably the confidence of a deep neural network and predicting its failures is of primary importance for the practical deployment of these models. In this paper, we propose a new target criterion for model confidence, corresponding to the True Class Probability (TCP). We show how using the TCP is more suited than relying on the classic Maximum Class Probability (MCP). We provide in addition theoretical guarantees for TCP in the context of failure prediction. Since the true class is by essence unknown at test time, we propose to learn TCP criterion on the training set, introducing a specific learning scheme adapted to this context. Extensive experiments are conducted for validating the relevance of the proposed approach. We study various network architectures, small and large scale datasets for image classification and semantic segmentation. We show that our approach consistently outperforms several strong methods, from MCP to Bayesian uncertainty, as well as recent approaches specifically designed for failure prediction.},
+   preview = {paper_confidnet.png},
+   selected={true},
+   bibtex_show={true},
+}
+
+@inproceedings{leveraging_iccvw,
+    title = {Leveraging Weakly Annotated Data for Fashion Image Retrieval and Label Prediction},
+    author = {Charles Corbière and Ben-Younes, Hedi and Rame, Alexandre and Ollion, Charles},
+    year = {2017},
+    booktitle = {ICCV Fashion Workshop},
+    arxiv = {1709.09426},
+    pdf = {https://openaccess.thecvf.com/content_ICCV_2017_workshops/papers/w32/Corbiere_Leveraging_Weakly_Annotated_ICCV_2017_paper.pdf},
+    abstract = {In this paper, we present a method to learn a visual representation adapted for e-commerce products. Based on weakly supervised learning, our model learns from noisy datasets crawled on e-commerce website catalogs and does not require any manual labeling. We show that our representation can be used for downward classification tasks over clothing categories with different levels of granularity. We also demonstrate that the learnt representation is suitable for image retrieval. We achieve nearly state-of-art results on the DeepFashion In-Shop Clothes Retrieval and Categories Attributes Prediction tasks, without using the provided training set.},
+    preview = {paper_leveraging.png},
+    selected={true},
+    bibtex_show={true},
 }
