@@ -1,23 +1,23 @@
-@misc{drivingvqa,
+@misc{drivingvqa2025,
    title = {Retrieval-Based Interleaved Visual Chain-of-Thought in Real-World Driving Scenarios},
    author = {Charles Corbière* and Syrielle Montariol* and Simon Roburin* and Antoine Bosselut and Alexandre Alahi},
-   note = {Under submission at ICCV 2025},
+   note = {Under submission to ICCV 2025},
    year = {2025},
    arxiv={2501.04671},
    pdf={https://arxiv.org/pdf/2501.04671},
-   abstract = {While Chain-of-Thought (CoT) prompting improves reasoning in large language models, its effectiveness in vision-language models (VLMs) remains limited due to over-reliance on textual cues and pre-learned priors. To investigate the visual reasoning capabilities of VLMs in complex real-world scenarios, we introduce DrivingVQA, a visual question answering dataset derived from driving theory exams that contains 3,931 multiple-choice problems, alongside expert-written explanations and grounded entities relevant to the reasoning process. Leveraging this dataset, we propose RIV-CoT, a retrieval-based interleaved visual chain-of-thought method that enables VLMs to reason over visual crops of these relevant entities. Our experiments demonstrate that RIV-CoT improves answer accuracy by 3.1% and reasoning accuracy by 4.6% over vanilla CoT prompting. Furthermore, we demonstrate that our method can effectively scale to the larger A-OKVQA reasoning dataset by leveraging automatically generated pseudo-labels, once again outperforming CoT prompting.,
-   preview = {paper_drivingvqa.png}
-      bibtex_show={true},
-      selected={true},
+   abstract = {While Chain-of-Thought (CoT) prompting improves reasoning in large language models, its effectiveness in vision-language models (VLMs) remains limited due to over-reliance on textual cues and pre-learned priors. To investigate the visual reasoning capabilities of VLMs in complex real-world scenarios, we introduce DrivingVQA, a visual question answering dataset derived from driving theory exams that contains 3,931 multiple-choice problems, alongside expert-written explanations and grounded entities relevant to the reasoning process. Leveraging this dataset, we propose RIV-CoT, a retrieval-based interleaved visual chain-of-thought method that enables VLMs to reason over visual crops of these relevant entities. Our experiments demonstrate that RIV-CoT improves answer accuracy by 3.1% and reasoning accuracy by 4.6% over vanilla CoT prompting. Furthermore, we demonstrate that our method can effectively scale to the larger A-OKVQA reasoning dataset by leveraging automatically generated pseudo-labels, once again outperforming CoT prompting.},
+   preview = {paper_drivingvqa.png},
+   bibtex_show={true},
+   selected={true},
 }
 
-@misc{dfi-omnistereo2025,
+@misc{dfiomnistereo2025,
    title = {Boosting Omnidirectional Stereo Matching with a Pre-trained Depth Foundation Model},
    author = {Jannik Endres and Oliver Hahn and Charles Corbière and Simone Schaub-Meyer and Stefan Roth and Alexandre Alahi},
-   note = {Under submission at IROS 2025},
+   note = {Under submission to IROS 2025},
    year = {2025},
    abstract = {Omnidirectional depth perception is essential for mobile robotics applications that require scene understanding across a full 360° field of view. Camera-based setups offer a cost-effective option by using stereo depth estimation to generate dense, high-resolution depth maps without relying on expensive active sensing. However, existing omnidirectional stereo matching approaches achieve only limited depth accuracy across diverse environments, depth ranges, and lighting conditions, due to the scarcity of real-world data. We present DFI-OmniStereo, a novel omnidirectional stereo matching method that leverages a large-scale pre-trained foundation model for relative monocular depth estimation within an iterative optimization-based stereo matching architecture. We introduce a dedicated twostage training strategy to utilize the relative monocular depth features for our omnidirectional stereo matching before scaleinvariant fine-tuning. DFI-OmniStereo achieves state-of-the-art results on the real-world Helvipad dataset, reducing disparity MAE by approximately 16% compared to the previous best omnidirectional stereo method.},
-   preview = {paper_dfiomnistereo.png}
+   preview = {paper_dfiomnistereo.png},
    bibtex_show={true},
    selected={true},
 }
@@ -49,6 +49,19 @@
    selected={true},
 }
 
+@inproceedings{corbiere2020,
+  title={Confidence Estimation via Auxiliary Models},
+  author={Charles Corbière and Thome, Nicolas and Saporta, Antoine and Vu, Tuan-HUng and Cord, Mathieu and P{\'e}rez, Patrick},
+  year={2021},
+  booktitle = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  arxiv = {2012.06508},
+  pdf = {https://arxiv.org/pdf/2012.06508.pdf},
+  preview = {paper_auxiliary.png},
+  abstract = {Reliably quantifying the confidence of deep neural classifiers is a challenging yet fundamental requirement for deploying such models in safety-critical applications. In this paper, we introduce a novel target criterion for model confidence, namely the true class probability (TCP). We show that TCP offers better properties for confidence estimation than standard maximum class probability (MCP). Since the true class is by essence unknown at test time, we propose to learn TCP criterion from data with an auxiliary model, introducing a specific learning scheme adapted to this context. We evaluate our approach on the task of failure prediction and of self-training with pseudo-labels for domain adaptation, which both necessitate effective confidence estimates. Extensive experiments are conducted for validating the relevance of the proposed approach in each task. We study various network architectures and experiment with small and large datasets for image classification and semantic segmentation. In every tested benchmark, our approach outperforms strong baselines.},
+  selected={true},
+  bibtex_show={true},
+}
+
 @inproceedings{corbiereUDL2021,
    title = {Beyond First-Order Uncertainty Estimation with Evidential Models for Open-World Recognition},
    author = {Charles Corbière and Lafon, Marc and Thome, Nicolas and Cord, Matthieu and P\'{e}rez, Patrick},
@@ -61,18 +74,6 @@
    bibtex_show={true},
 }
 
-@inproceedings{corbiere2020,
-  title={Confidence Estimation via Auxiliary Models},
-  author={Charles Corbière and Thome, Nicolas and Saporta, Antoine and Vu, Tuan-HUng and Cord, Mathieu and P{\'e}rez, Patrick},
-  year={2021},
-  booktitle = {TPAMI},
-  arxiv = {2012.06508},
-  pdf = {https://arxiv.org/pdf/2012.06508.pdf},
-  preview = {paper_auxiliary.png},
-  abstract = {Reliably quantifying the confidence of deep neural classifiers is a challenging yet fundamental requirement for deploying such models in safety-critical applications. In this paper, we introduce a novel target criterion for model confidence, namely the true class probability (TCP). We show that TCP offers better properties for confidence estimation than standard maximum class probability (MCP). Since the true class is by essence unknown at test time, we propose to learn TCP criterion from data with an auxiliary model, introducing a specific learning scheme adapted to this context. We evaluate our approach on the task of failure prediction and of self-training with pseudo-labels for domain adaptation, which both necessitate effective confidence estimates. Extensive experiments are conducted for validating the relevance of the proposed approach in each task. We study various network architectures and experiment with small and large datasets for image classification and semantic segmentation. In every tested benchmark, our approach outperforms strong baselines.},
-  selected={true},
-  bibtex_show={true},
-}
 
 @inproceedings{NIPS2019_8556,
    title = {Addressing Failure Prediction by Learning Model Confidence},
