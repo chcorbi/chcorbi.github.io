@@ -30,4 +30,4 @@ Supervised master’s students for their 5-month [semester projects](https://epf
 
 ## Reviewing
 ---
-NeurIPS, ICCV, ICLR, T-PAMI, Transportation Research Part C
+NeurIPS, ICCV, ICLR, PAMI, Transportation Research Part C
