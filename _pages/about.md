@@ -15,7 +15,7 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: false # includes social icons at the bottom of the page
 ---
 
-I am a Senior Machine Learning Researcher at [Raidium](https://www.raidium.eu), where my work focuses on advancing large multimodal models for medical applications.
+I am a senior machine learning researcher at [Raidium](https://www.raidium.eu), where my work focuses on advancing large multimodal models for medical applications.
 
 Previously, I was a postdoctoral researcher at [EPFL](https://www.epfl.ch/) in the [Visual Intelligence for Transportation (VITA)](https://vita.epfl.ch/) lab, led by [Prof. Alexandre Alahi](https://people.epfl.ch/alexandre.alahi). My research there explored how to [leverage large multimodal models for autonomous driving](https://vita-epfl.github.io/DrivingVQA/), an another example of safety-critical application. I also led the creation of [Helvipad](https://vita-epfl.github.io/Helvipad/), the first stereo depth estimation dataset based on 360° cameras.
 
